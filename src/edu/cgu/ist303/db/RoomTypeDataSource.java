@@ -6,19 +6,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomDataSource {
+public class RoomTypeDataSource {
 
 	private MySQLConnector mySqlconn;
-	private static final String TABLE_NAME = "room";
-	private static final String ROOM_ID = "Room_Id";
-	private static final String ROOM_NAME = "Room_Name";
+	private static final String TABLE_NAME = "room_type";
 	private static final String ROOM_TYPE_ID = "Room_Type_Id";
+	private static final String ROOM_TYPE = "Room_Type";
+	private static final String CAPACITY = "Capacity"; 
 	
 
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	
-	public RoomDataSource() //constructor, link to DB and choose personnel table
+	public RoomTypeDataSource() //constructor, link to DB and choose personnel table
 	{
 		mySqlconn = new MySQLConnector();
 	}
@@ -28,16 +28,16 @@ public class RoomDataSource {
 		mySqlconn.close();
     }
 	
-	public Room createRoom(Room r)
+	public RoomType createRoom(RoomType rt)
     {
 		 try {
 				stmt = mySqlconn.conn.createStatement();
-				String sql = "INSERT INTO " + TABLE_NAME + "("+ ROOM_NAME + ", " + ROOM_TYPE_ID + ")" +
-							 "VALUES ('" + r.getRoom_name() + "', '" + r.getFk_room_type_id()  +"');" ; 
+				String sql = "INSERT INTO " + TABLE_NAME + "("+ ROOM_TYPE + ", " + CAPACITY + ")" +
+							 "VALUES ('" + rt.getRoom_type() + "', '" + rt.getCapacity()  +"');" ; 
 				stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS); // auto-generated keys made available for retrieval 
 				rs = stmt.getGeneratedKeys();  //ResultSet object containing the auto-generated key(s)
 				rs.next();
-				r.setId(rs.getInt(1)); // 
+				rt.setId(rs.getInt(1)); // 
 			   } catch (SQLException ex) {
 				   System.out.println("SQLException: " + ex.getMessage());
 				   System.out.println("SQLState: " + ex.getSQLState());
@@ -53,18 +53,18 @@ public class RoomDataSource {
 			   }
            
                             
-            return r;
+            return rt;
     }
 	
-	 public void deleteRoom(Room r) 
+	 public void deleteRoom(RoomType rt) 
 	 {
          
          try {
 				
-        	 	int id = r.getId();
+        	 	int id = rt.getId();
         	 	stmt = mySqlconn.conn.createStatement();
 				String sql = "DELETE FROM" + TABLE_NAME + 
-							 "WHERE " + ROOM_ID + " = " + id + "" ; 
+							 "WHERE " + ROOM_TYPE_ID + " = " + id + "" ; 
 				stmt.executeUpdate(sql);
 				
 			   } catch (SQLException ex) {
@@ -83,52 +83,10 @@ public class RoomDataSource {
          
          
      }
-	 public List<Room> getTypeRoom(int roomTypeId) {
-         List<Room> roomList = new ArrayList<Room>();
-
-         
-         try {
-				stmt = mySqlconn.conn.createStatement();
-				String sql = "SELECT " + ROOM_ID + ", " + ROOM_NAME + 
-							 " FROM " + TABLE_NAME + " WHERE " + ROOM_TYPE_ID + " = " + roomTypeId + ";" ; 
-				rs = stmt.executeQuery(sql);
-				while(rs.next())
-				{
-					Room r = new Room();
-					r.setId(rs.getInt(ROOM_ID));
-					r.setRoom_name(rs.getString(ROOM_NAME));
-					//r.setFk_room_type_id(rs.getInt(ROOM_TYPE_ID));
-					
-					roomList.add(r);
-				}
-			   } catch (SQLException ex) {
-				   System.out.println("SQLException: " + ex.getMessage());
-				   System.out.println("SQLState: " + ex.getSQLState());
-				   System.out.println("VendorError: " + ex.getErrorCode());
-			   }finally {
-				   if (rs != null) {
-				        try {
-				            rs.close();
-				        } catch (SQLException sqlEx) { } // ignore
-
-				        rs = null;
-				    }
-				   
-				   if (stmt != null) {
-				        try {
-				            stmt.close();
-				        } catch (SQLException sqlEx) { } // ignore
-
-				        stmt = null;
-				    }
-			   }
-        
-
-         return roomList;
-       }
+	
 	 
-	 public List<Room> getAllRoom() {
-         List<Room> roomList = new ArrayList<Room>();
+	 public List<RoomType> getAllRoom() {
+         List<RoomType> roomTypeList = new ArrayList<RoomType>();
 
          
          try {
@@ -138,12 +96,12 @@ public class RoomDataSource {
 				rs = stmt.executeQuery(sql);
 				while(rs.next())
 				{
-					Room r = new Room();
-					r.setId(rs.getInt(ROOM_ID));
-					r.setRoom_name(rs.getString(ROOM_NAME));
-					r.setFk_room_type_id(rs.getInt(ROOM_TYPE_ID));
+					RoomType rt = new RoomType();
+					rt.setId(rs.getInt(ROOM_TYPE_ID));
+					rt.setRoom_type(rs.getString(ROOM_TYPE));
+					rt.setCapacity(rs.getInt(CAPACITY));
 					
-					roomList.add(r);
+					roomTypeList.add(rt);
 				}
 			   } catch (SQLException ex) {
 				   System.out.println("SQLException: " + ex.getMessage());
@@ -168,8 +126,6 @@ public class RoomDataSource {
 			   }
         
 
-         return roomList;
+         return roomTypeList;
        }
-
-	
 }
