@@ -53,7 +53,7 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 	private JTable table;
 	private JScrollPane scrollPane;
 	private JLabel lblSelectedRoom;
-	private JTextField tfSelectedRoom,tfService ,tfDateFrom ,tfDateTo ;
+	private JTextField tfSelectedRoom ,tfDateFrom ,tfDateTo ;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_2;
 	private JLabel labService;
@@ -153,10 +153,6 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		labService = new JLabel("Service");
 		labService.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlCustomer.add(labService, "1, 11, right, default");
-		
-		tfService = new JTextField();
-		pnlCustomer.add(tfService, "3, 11, fill, default");
-		tfService.setColumns(10);
 		
 		btnBook = new JButton("Submit");
 		pnlCustomer.add(btnBook, "3, 15");
