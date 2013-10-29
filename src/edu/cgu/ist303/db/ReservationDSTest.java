@@ -17,9 +17,10 @@ public class ReservationDSTest {
 		//3 is Quadrupple type room 
 		r = rDS.getAvailableRooms(3, date_from, date_to);
 		for(int i = 0; i < r.size(); i++){
-			//System.out.println(r.get(i));
+			System.out.println(r.get(i));
 			System.out.println("Date from "+ date_from + " to " + date_to);
 			System.out.println("\"" + rDS.getRoomNameById(r.get(i)) + "\" is available.");
+			
 		}
 		
 	}

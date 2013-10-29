@@ -13,7 +13,7 @@ public class RoomDataSource {
 	private static final String ROOM_ID = "Room_Id";
 	private static final String ROOM_NAME = "Room_Name";
 	private static final String ROOM_TYPE_ID = "Room_Type_Id";
-	
+	private static final String[] allColumns = { ROOM_ID, ROOM_NAME, ROOM_TYPE_ID};
 
 	private Statement stmt = null;
 	private ResultSet rs = null;
@@ -170,6 +170,8 @@ public class RoomDataSource {
 
          return roomList;
        }
-
+	 public String[] getAllColumns(){
+		 return allColumns;
+	 }
 	
 }

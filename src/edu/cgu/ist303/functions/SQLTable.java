@@ -89,6 +89,7 @@ catch(Exception e){
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        /*
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -99,7 +100,7 @@ catch(Exception e){
             new String [] {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
-        ));
+        ));*/
         jScrollPane1.setViewportView(jTable);
 
         ComboBox.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {

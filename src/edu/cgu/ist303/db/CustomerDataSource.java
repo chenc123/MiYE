@@ -19,7 +19,8 @@ public class CustomerDataSource {
 	private static final String STATE = "State";
 	private static final String ZIPCODE = "Zip_code";
 	private static final String PHONE_NUMBER = "Phone_Number";
-	
+	private static final String[] allColumns = {CUSTOMER_ID, FIRST_NAME, LAST_NAME,
+		ADDRESS_ONE, ADDRESS_TWO, CITY, STATE, ZIPCODE, PHONE_NUMBER};
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	
@@ -193,5 +194,7 @@ public class CustomerDataSource {
          return c;
        }
 
-	
+	 public String[] getAllColumns(){
+		 return allColumns;
+	 }
 }
