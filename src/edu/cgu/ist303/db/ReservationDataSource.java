@@ -38,10 +38,42 @@ public class ReservationDataSource {
     {
 		 try {
 				stmt = mySqlconn.conn.createStatement();
-				String sql = "INSERT INTO " + TABLE_NAME + "("+ ROOM_ID + ", " + RESERVATION_DATE + ", " + CUSTOMER_ID + ", " + SERVICE_CATEGORY_ID + 
+				String sql = "INSERT INTO " + TABLE_NAME + " (" + ROOM_ID + ", " + RESERVATION_DATE + ", " + CUSTOMER_ID + ", " + SERVICE_CATEGORY_ID + ", "+
 						START_DATE + ", " + END_DATE +")" +
-							 "VALUES ('" + r.getFk_room_id() + "', '" + r.getReservation_Date() + "', '" + r.getFk_customer_id() + "', '" + 
+							 " VALUES ('" + r.getFk_room_id() + "', '" + r.getReservation_Date() + "', '" + r.getFk_customer_id() + "', '" + 
 							r.getFk_service_category_id() + "', '" + r.getStart_Date()+ "', '" + r.getEnd_Date() + "');" ; 
+				
+				stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				rs = stmt.getGeneratedKeys();
+				rs.next();
+				r.setId(rs.getInt(1));
+				
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+           
+                            
+            return r;
+    }
+	
+	public Reservation createReservationNoService(Reservation r)
+    {
+		 try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "INSERT INTO " + TABLE_NAME + " (" + ROOM_ID + ", " + RESERVATION_DATE + ", " + CUSTOMER_ID  + ", "+
+						START_DATE + ", " + END_DATE +")" +
+							 " VALUES ('" + r.getFk_room_id() + "', '" + r.getReservation_Date() + "', '" + r.getFk_customer_id()  + "', '" + r.getStart_Date()+ "', '" + r.getEnd_Date() + "');" ; 
+				
 				stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				rs = stmt.getGeneratedKeys();
 				rs.next();

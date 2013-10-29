@@ -1,5 +1,6 @@
 package edu.cgu.ist303.functions;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,6 +31,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,40 +40,38 @@ import java.awt.GridLayout;
 
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 
 public class ReservationV2 extends JPanel implements ActionListener, ItemListener, MouseListener {
 	
-	private static boolean ROOM_TYPE_POPULATE = false; 
-	private JTextField tfSerach, tfFirstName, tfLastName;
-	private JButton btnCheckCustomer, btnCheckRoom;
-	private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, abc;
+	private int customerId; 
+	private JTextField tfSerach, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
+	private JButton btnCheckCustomer, btnCheckRoom, btnBook;
+	private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, comboBoxService;
 	JPanel pnlCustomer, pnlReservation;
-	HashMap<String, Integer> roomTypeMap, roomMap;
+	private HashMap<String, Integer> roomTypeMap, roomMap, serviceCategoryMap;
 	private JDateChooser dateFrom, dateTo;
 	private JCheckBox chckbxPreferredRoom;
-	private JPanel panel;
+	private JPanel pnlTable;
 	private JTable table;
 	private JScrollPane scrollPane;
 	private JLabel lblSelectedRoom;
-	private JTextField tfSelectedRoom ,tfDateFrom ,tfDateTo ;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_2;
 	private JLabel labService;
 	private SimpleDateFormat sdf;
-	private JButton btnBook;
+	
 	
 	/**
 	 * Create the panel.
 	 */
-	public ReservationV2(JFrame f) {
-		setLayout(null);
+	public ReservationV2() {
 		
 		 
 		 
 		pnlCustomer = new JPanel();
 		pnlCustomer.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Customer Infomation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlCustomer.setBounds(379, 11, 388, 365);
-		add(pnlCustomer);
 		pnlCustomer.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("113px"),
 				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -83,17 +83,17 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 				RowSpec.decode("30px"),
 				RowSpec.decode("34px"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("max(21dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("max(21dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("max(19dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("max(20dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("max(15dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,}));
+				RowSpec.decode("max(22dlu;default)"),}));
 		
 		
 		String [] list= {"Phone", "Name"};
@@ -126,9 +126,10 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		pnlCustomer.add(tfLastName, "3, 3, fill, center");
 		tfLastName.setColumns(10);
 		
+		
 		lblSelectedRoom = new JLabel("Selected Room");
 		lblSelectedRoom.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		pnlCustomer.add(lblSelectedRoom, "1, 5, right, default");
+		pnlCustomer.add(lblSelectedRoom, "1, 5, right, fill");
 		
 		tfSelectedRoom = new JTextField();
 		pnlCustomer.add(tfSelectedRoom, "3, 5, fill, default");
@@ -154,13 +155,25 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		labService.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlCustomer.add(labService, "1, 11, right, default");
 		
+		comboBoxService = new JComboBox();
+		pnlCustomer.add(comboBoxService, "3, 11, fill, default");
+		ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
+		List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
+		scList = scDS.getAllServiceCategory();
+		scDS.close();
+		serviceCategoryMap = new HashMap<String, Integer>(); 
+		comboBoxService.addItem("");
+		for(ServiceCategory sc:scList){
+			serviceCategoryMap.put(sc.getCategory(), sc.getId());
+		    comboBoxService.addItem(sc.getCategory());
+		}
+		
+		
 		btnBook = new JButton("Submit");
 		pnlCustomer.add(btnBook, "3, 15");
 		
 		pnlReservation = new JPanel();
 		pnlReservation.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Room Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlReservation.setBounds(0, 11, 380, 170);
-		add(pnlReservation);
 		pnlReservation.setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
@@ -187,7 +200,6 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		pnlReservation.add(lblNewLabel, "4, 2, right, default");
 		
 		comboBoxRoomType = new JComboBox();
-		
 		comboBoxRoomType.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		RoomTypeDataSource rtDS = new RoomTypeDataSource();
 	    List<RoomType> roomTypeList = new ArrayList<RoomType>(); 
@@ -210,9 +222,6 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		pnlReservation.add(chckbxPreferredRoom, "6, 4, left, default");
 		
 		
-		
-		
-		
 		JLabel labDateFrom = new JLabel("From Date");
 		labDateFrom.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlReservation.add(labDateFrom, "4, 6, right, default");
@@ -232,23 +241,46 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		btnCheckRoom = new JButton("Check Room");
 		pnlReservation.add(btnCheckRoom, "8, 8, center, default");
 		
-		chckbxPreferredRoom.addItemListener(this);
-		comboBoxRoomType.addActionListener(this);
-		btnCheckRoom.addActionListener(this);
 		
 		
-		panel = new JPanel();
-		panel.setBounds(10, 191, 368, 185);
-		add(panel);
-		panel.setLayout(new GridLayout(1, 0, 0, 0));
+		pnlTable = new JPanel();
+		pnlTable.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		scrollPane = new JScrollPane();
-		panel.add(scrollPane);
+		pnlTable.add(scrollPane);
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
 		table.addMouseListener(this);
-		f.getContentPane().add(this);
+		chckbxPreferredRoom.addItemListener(this);
+		comboBoxRoomType.addActionListener(this);
+		btnCheckRoom.addActionListener(this);
+		btnBook.addActionListener(this);
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(pnlReservation, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(10)
+					.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 368, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(379)
+					.addComponent(pnlCustomer, GroupLayout.PREFERRED_SIZE, 388, GroupLayout.PREFERRED_SIZE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(11)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(pnlReservation, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
+							.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE))
+						.addComponent(pnlCustomer, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE)))
+		);
+		setLayout(groupLayout);
+		
+		
 	}
 	
 	public void itemStateChanged(ItemEvent e){
@@ -289,7 +321,60 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 	 }
 	
 	public void actionPerformed(ActionEvent ae) {
+		if(ae.getSource()== btnBook){
+			
+			roomMap = new HashMap<String, Integer>();
+			RoomDataSource roomDS = new RoomDataSource();
+			List<Room> rList = new ArrayList<Room>();
+			rList = roomDS.getAllRoom();
+			for(Room room:rList){
+				roomMap.put(room.getRoom_name(), room.getId());
+			}
+			
+			
+			//System.out.println(roomMap.get(tfSelectedRoom.getText()));
+			//System.out.println(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+			
+				try {
+					
+					java.util.Date utilDateFrom = sdf.parse(tfDateFrom.getText());
+					java.sql.Date sqlDateFrom = new java.sql.Date(utilDateFrom.getTime());
+					java.util.Date utilDateTo = sdf.parse(tfDateTo.getText());
+					java.sql.Date sqlDateTo = new java.sql.Date(utilDateTo.getTime());
+					java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+					
+					//System.out.println("Customer_ID: "+ customerId + " Room_ID: " + roomMap.get(tfSelectedRoom.getText()) + " Today: " + sqlToday + " From: " +sqlDateFrom + " To "+ sqlDateTo + " Service_Category_ID: " + serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+					edu.cgu.ist303.db.Reservation r = new edu.cgu.ist303.db.Reservation();
+					r.setFk_customer_id(customerId);
+					r.setFk_room_id(roomMap.get(tfSelectedRoom.getText()));
+					r.setReservation_Date(sqlToday);
+					r.setStart_Date(sqlDateFrom);
+					r.setEnd_Date(sqlDateTo);
+					
+					ReservationDataSource rDS = new ReservationDataSource();
+					if(comboBoxService.getSelectedItem() != ""){
+						r.setFk_service_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+						r = rDS.createReservation(r);
+					}	
+					else
+						r = rDS.createReservationNoService(r);
+					
+					if(r.getId()!=0)
+						JOptionPane.showMessageDialog(this, "Booking successful", "Message", JOptionPane.INFORMATION_MESSAGE);
+					else
+						;
+					
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 		
+			
+		
+			
+			
+		}
 		
 		if(ae.getSource() == btnCheckRoom){
 			ReservationDataSource rDS= new ReservationDataSource();
@@ -324,10 +409,10 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 			switch (searchItem) {
 				case "Phone": 
 					c = cusDS.getCustomerByPhone(tfSerach.getText());
-					System.out.println(c.getFirstName());
+					//System.out.println(c.getFirstName());
 					tfFirstName.setText(c.getFirstName());
 					tfLastName.setText(c.getLastName());
-					
+					customerId = c.getId();
 					if(c.getId()==0)
 						JOptionPane.showMessageDialog(this, 
 								"No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
@@ -405,7 +490,7 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		int row = table.getSelectedRow();
 		int col = table.getSelectedColumn();
 		
@@ -447,8 +532,11 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 
 	public static void main(String[] args) {
 		JFrame frm = new JFrame();
-		frm.setSize(600,500);
-		new ReservationV2(frm);
+		//frm.setSize(600,500);
+		 JComponent newContentPane = new ReservationV2();
+		 newContentPane.setOpaque(false);
+		 frm.setContentPane(newContentPane);
+		 frm.pack();
 		frm.setVisible(true);
 		
 		

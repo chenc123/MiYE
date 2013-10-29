@@ -1,11 +1,13 @@
 package edu.cgu.ist303.db;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReservationDSTest {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws ParseException{
 		
 		ReservationDataSource rDS = new ReservationDataSource();
 		//it's your check in date 
@@ -22,7 +24,21 @@ public class ReservationDSTest {
 			System.out.println("\"" + rDS.getRoomNameById(r.get(i)) + "\" is available.");
 			
 		}
-		
+		Reservation reser = new Reservation();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+
+		java.util.Date utilDateFrom = sdf.parse("2013-10-30");
+		java.sql.Date sqlDateFrom = new java.sql.Date(utilDateFrom.getTime());
+		java.util.Date utilDateTo = sdf.parse("2013-11-1");
+		java.sql.Date sqlDateTo = new java.sql.Date(utilDateTo.getTime());
+		reser.setFk_customer_id(2);
+		reser.setFk_room_id(1);
+		reser.setFk_service_category_id(1);
+		reser.setReservation_Date(sqlToday);
+		reser.setStart_Date(sqlDateFrom);
+		reser.setEnd_Date(sqlDateTo);
+		rDS.createReservation(reser);
 	}
 
 }

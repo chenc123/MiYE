@@ -6,19 +6,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceCategoryDataSource {
+public class ServiceDataSource {
 	private MySQLConnector mySqlconn;
-	private static final String TABLE_NAME = "service_category";
-	private static final String SERVICE_CATEGORY_ID = "Service_Category_Id";
-	private static final String CATEGORY = "Category";
-	private static final String UNIT_COST = "Unit_Cost";
-	private static final String DURATION = "Duration";
+	private static final String TABLE_NAME = "service";
 	private static final String SERVICE_ID = "Service_Id";
-
+	private static final String SERVICE_NAME = "Service_Name";
+	
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	
-	public ServiceCategoryDataSource() //constructor, link to DB and choose personnel table
+	public ServiceDataSource() //constructor, link to DB and choose personnel table
 	{
 		mySqlconn = new MySQLConnector();
 	}
@@ -28,18 +25,16 @@ public class ServiceCategoryDataSource {
 		mySqlconn.close();
     }
 	
-	public ServiceCategory createServiceCategory(ServiceCategory sc)
+	public Service createService(Service s)
     {
 		 try {
 				stmt = mySqlconn.conn.createStatement();
-				String sql = "INSERT INTO " + TABLE_NAME + "(" +  CATEGORY + 
-						 ", " + UNIT_COST + ", " + DURATION + ", " + SERVICE_ID + ")" +
-							 "VALUES ('" + "', '" + sc.getCategory() + "', '" + sc.getUnit_cost() + 
-							 "', '" + sc.getDuration() + "', '" + sc.getFk_service_id() + "');" ; 
+				String sql = "INSERT INTO " + TABLE_NAME + "(" + SERVICE_NAME + ")" +
+							 "VALUES ('" + s.getService_name() + "');" ; 
 				stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS); // auto-generated keys made available for retrieval 
 				rs = stmt.getGeneratedKeys();  //ResultSet object containing the auto-generated key(s)
 				rs.next();
-				sc.setId(rs.getInt(1)); // 
+				s.setId(rs.getInt(1)); // 
 			   } catch (SQLException ex) {
 				   System.out.println("SQLException: " + ex.getMessage());
 				   System.out.println("SQLState: " + ex.getSQLState());
@@ -55,18 +50,18 @@ public class ServiceCategoryDataSource {
 			   }
            
                             
-            return sc;
+            return s;
     }
 	
-	 public void deleteServiceCategory(ServiceCategory sc) 
+	 public void deleteServiceCategory(Service s) 
 	 {
          
          try {
 				
-        	 	int id = sc.getId();
+        	 	int id = s.getId();
         	 	stmt = mySqlconn.conn.createStatement();
 				String sql = "DELETE FROM" + TABLE_NAME + 
-							 "WHERE " + SERVICE_CATEGORY_ID + " = " + id + "" ; 
+							 "WHERE " + SERVICE_ID + " = " + id + "" ; 
 				stmt.executeUpdate(sql);
 				
 			   } catch (SQLException ex) {
@@ -87,8 +82,8 @@ public class ServiceCategoryDataSource {
      }
 	
 	 
-	 public List<ServiceCategory> getAllServiceCategory() {
-         List<ServiceCategory> scList = new ArrayList<ServiceCategory>();
+	 public List<Service> getAllService() {
+         List<Service> sList = new ArrayList<Service>();
 
          
          try {
@@ -99,13 +94,11 @@ public class ServiceCategoryDataSource {
 				
 				while(rs.next())
 				{
-					ServiceCategory sc = new ServiceCategory();
-					sc.setId(rs.getInt(SERVICE_CATEGORY_ID));
-					sc.setCategory(rs.getString(CATEGORY));
-					sc.setUnit_cost(rs.getDouble(UNIT_COST));
-					sc.setDuration(rs.getInt(DURATION));
-					sc.setFk_service_id(rs.getInt(SERVICE_ID));
-					scList.add(sc);
+					Service s = new Service();
+					s.setId(rs.getInt(SERVICE_ID));
+					s.setService_name(rs.getString(SERVICE_NAME));
+					
+					sList.add(s);
 				}
 			   } catch (SQLException ex) {
 				   System.out.println("SQLException: " + ex.getMessage());
@@ -130,7 +123,6 @@ public class ServiceCategoryDataSource {
 			   }
         
 
-         return scList;
+         return sList;
        }
-
 }

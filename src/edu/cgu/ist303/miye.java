@@ -39,7 +39,7 @@ public class miye extends JFrame implements ActionListener {
 		setResizable(false);
 		setTitle("MiYE");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(200, 50, 800, 600);
+		setBounds(200, 50, 1000, 600);
 		mainPane = new JPanel(); //card 1
 		mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(mainPane);
@@ -150,7 +150,7 @@ public class miye extends JFrame implements ActionListener {
 	    
 	     
 	     if ( e.getSource() == btnLogin )    
-				 if( username != "" && password != "" && loginValidation(username,password) == true)
+				 if( !username.isEmpty() && !password.isEmpty() && loginValidation(username,password) == true)
 				 {
 					JOptionPane.showMessageDialog(this, "Login Success!");
 					cardManager = (CardLayout) mainPane.getLayout();
