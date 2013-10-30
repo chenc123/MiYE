@@ -193,6 +193,55 @@ public class CustomerDataSource {
 
          return c;
        }
+	 public List<Customer> getCustomerByName(String name) {
+		
+		 List<Customer> customerList = new ArrayList<Customer>();
+         
+         try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT * " + 
+							 "FROM "+ TABLE_NAME +
+							 " WHERE " + FIRST_NAME + " = \"" + name + "\"" + "OR \"" + LAST_NAME + "\" = " + name + ";" ; 
+				rs = stmt.executeQuery(sql);
+				while(rs.next())
+				{
+					Customer c = new Customer();
+					c.setId(rs.getInt(CUSTOMER_ID));
+					c.setFirstName(rs.getString(FIRST_NAME));
+					c.setLastName(rs.getString(LAST_NAME));
+					c.setAddress_one(rs.getString(ADDRESS_ONE));
+					c.setAddress_two(rs.getString(ADDRESS_TWO));
+					c.setCity(rs.getString(CITY));
+					c.setState(rs.getString(STATE));
+					c.setZipCode(rs.getString(ZIPCODE));
+					c.setPhoneNumber(rs.getString(PHONE_NUMBER));
+					customerList.add(c);
+				}
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+        
+
+         return customerList;
+       }
 
 	 public String[] getAllColumns(){
 		 return allColumns;
