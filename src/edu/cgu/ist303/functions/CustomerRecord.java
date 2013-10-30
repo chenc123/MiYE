@@ -194,14 +194,14 @@ public class CustomerRecord extends JPanel implements ActionListener {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(244)
-							.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(79)
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(pnlCustomerModify, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(pnlSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))))
-					.addContainerGap(71, Short.MAX_VALUE))
+								.addComponent(pnlSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(24)
+							.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 599, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(78, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -211,7 +211,8 @@ public class CustomerRecord extends JPanel implements ActionListener {
 					.addGap(21)
 					.addComponent(pnlCustomerModify, GroupLayout.PREFERRED_SIZE, 272, GroupLayout.PREFERRED_SIZE)
 					.addGap(11)
-					.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE))
+					.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
+					.addGap(49))
 		);
 		setLayout(groupLayout);
 	}

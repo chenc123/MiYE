@@ -65,6 +65,41 @@ public class CustomerDataSource {
                             
             return c;
     }
+	public boolean updateCustomer(Customer c)
+    {
+		boolean success = false ; 
+		try {
+				
+			 stmt = mySqlconn.conn.createStatement();
+				String sql = "UPDATE " + TABLE_NAME + " SET "+ FIRST_NAME + " = '" + c.getFirstName() + "', " +
+							LAST_NAME + " = '" + c.getLastName() + "', " +
+							ADDRESS_ONE + " = '" + c.getAddress_one() + "', " + 
+							ADDRESS_TWO + " = '" + c.getAddress_two() + "', " +
+							CITY + " = '" + c.getCity() + "', " +
+							STATE + " = '" + c.getState() + "', " +
+							ZIPCODE + " = '" + c.getZipCode() + "', " +
+							PHONE_NUMBER + " = '" +  c.getPhoneNumber() + "'" +
+							" WHERE " + CUSTOMER_ID + " = " + c.getId() + ";";
+				//System.out.println(sql);			 
+				stmt.executeUpdate(sql); 
+				success = true;
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+				   success = false;
+			   }finally {
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+           
+          return success;
+    }
 	
 	 public void deleteCustomer(Customer c) 
 	 {
@@ -202,7 +237,7 @@ public class CustomerDataSource {
 				stmt = mySqlconn.conn.createStatement();
 				String sql = "SELECT * " + 
 							 "FROM "+ TABLE_NAME +
-							 " WHERE " + FIRST_NAME + " = \"" + name + "\"" + "OR \"" + LAST_NAME + "\" = " + name + ";" ; 
+							 " WHERE " + FIRST_NAME + " LIKE '%" + name + "%'" + " OR " + LAST_NAME + " LIKE '%" + name + "%';" ; 
 				rs = stmt.executeQuery(sql);
 				while(rs.next())
 				{

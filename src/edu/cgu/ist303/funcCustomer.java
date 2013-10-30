@@ -2,8 +2,11 @@ package edu.cgu.ist303;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.jgoodies.forms.factories.FormFactory;
 
 import edu.cgu.ist303.db.Customer;
@@ -222,7 +225,7 @@ public class funcCustomer {
 		
 	}
 
-	class CustomerRecordPage extends JPanel implements ActionListener {
+	class CustomerRecordPage extends JPanel implements ActionListener, MouseListener {
 		private JTextField tfSearchString;
 		private JTextField tfFName;
 		private JTextField tfLName;
@@ -235,7 +238,7 @@ public class funcCustomer {
 		private JTable tblCustomer;
 		private JButton btnSearch, btnModify;
 		private JComboBox cbxSearchField;
-
+		private int customerId;
 		/**
 		 * Create the panel.
 		 */
@@ -375,7 +378,7 @@ public class funcCustomer {
 			
 			tblCustomer = new JTable();
 			scrollPane.setViewportView(tblCustomer);
-			
+			tblCustomer.addMouseListener(this);
 			btnSearch.addActionListener(this);
 			btnModify.addActionListener(this);
 			GroupLayout groupLayout = new GroupLayout(this);
@@ -384,14 +387,14 @@ public class funcCustomer {
 					.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 							.addGroup(groupLayout.createSequentialGroup()
-								.addGap(244)
-								.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE))
-							.addGroup(groupLayout.createSequentialGroup()
 								.addGap(79)
 								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 									.addComponent(pnlCustomerModify, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(pnlSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))))
-						.addContainerGap(71, Short.MAX_VALUE))
+									.addComponent(pnlSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGap(24)
+								.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 599, GroupLayout.PREFERRED_SIZE)))
+						.addContainerGap(78, Short.MAX_VALUE))
 			);
 			groupLayout.setVerticalGroup(
 				groupLayout.createParallelGroup(Alignment.LEADING)
@@ -401,9 +404,50 @@ public class funcCustomer {
 						.addGap(21)
 						.addComponent(pnlCustomerModify, GroupLayout.PREFERRED_SIZE, 272, GroupLayout.PREFERRED_SIZE)
 						.addGap(11)
-						.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE))
+						.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
+						.addGap(49))
 			);
 			setLayout(groupLayout);
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			int row = tblCustomer.getSelectedRow();
+			//int col = tblCustomer.getSelectedColumn();
+			try{
+				customerId = (int) tblCustomer.getValueAt(row, 0);
+				tfFName.setText(tblCustomer.getValueAt(row, 1).toString());
+				tfLName.setText(tblCustomer.getValueAt(row, 2).toString());
+				tfAddress1.setText(tblCustomer.getValueAt(row, 3).toString()); 
+				tfAddress2.setText(tblCustomer.getValueAt(row, 4).toString()); 
+				tfCity.setText(tblCustomer.getValueAt(row, 5).toString());
+				tfState.setText(tblCustomer.getValueAt(row, 6).toString());
+				tfZipCode.setText(tblCustomer.getValueAt(row, 7).toString());
+				tfPhone.setText(tblCustomer.getValueAt(row, 8).toString());
+			}catch(NullPointerException npe){
+				
+			}
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
 		}
 
 		@Override
@@ -416,44 +460,67 @@ public class funcCustomer {
 				
 				switch (searchItem) {
 					case "Phone": 
-						c = cusDS.getCustomerByPhone(tfSearchString.getText());
-						tfFName.setText(c.getFirstName());
-						tfLName.setText(c.getLastName());
-						tfAddress1.setText(c.getAddress_one()); 
-						tfAddress2.setText(c.getAddress_two()); 
-						tfCity.setText(c.getCity());
-						tfState.setText(c.getState());
-						tfZipCode.setText(c.getZipCode());
-						tfPhone.setText(c.getPhoneNumber());
+						if(!tfSearchString.getText().isEmpty()){
+							c = cusDS.getCustomerByPhone(tfSearchString.getText());
+							tfFName.setText(c.getFirstName());
+							tfLName.setText(c.getLastName());
+							tfAddress1.setText(c.getAddress_one()); 
+							tfAddress2.setText(c.getAddress_two()); 
+							tfCity.setText(c.getCity());
+							tfState.setText(c.getState());
+							tfZipCode.setText(c.getZipCode());
+							tfPhone.setText(c.getPhoneNumber());
+							customerId = c.getId();
 						if(c.getId()==0)
 							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
+						}else
+							JOptionPane.showMessageDialog(this, "Please enter the phone number", "Result", JOptionPane.INFORMATION_MESSAGE);;
 						break;
 					case "Name": 
-						List<Customer> cList = new ArrayList<Customer>();
-						cList = cusDS.getCustomerByName(tfSearchString.getText());
-						DefaultTableModel model = new DefaultTableModel();
-						model.setColumnIdentifiers(cusDS.getAllColumns());
-						tblCustomer.setModel(model);
-						if(!cList.isEmpty()){
-							for(Customer customer:cList){
-								model.addRow(new Object[]{customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getAddress_one(), 
+						if(!tfSearchString.getText().isEmpty()){
+							List<Customer> cList = new ArrayList<Customer>();
+							cList = cusDS.getCustomerByName(tfSearchString.getText());
+							DefaultTableModel model = new DefaultTableModel();
+							String [] columns = {"ID","First Name", "Last Name", "Address 1", "Address 2 ", "City", "State", "Zip Code", "Phone"};
+							model.setColumnIdentifiers(columns);
+							tblCustomer.setModel(model);
+							if(!cList.isEmpty()){
+								for(Customer customer:cList){
+									model.addRow(new Object[]{customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getAddress_one(), 
 										customer.getAddress_two(), customer.getCity(),customer.getState(), customer.getZipCode(), customer.getPhoneNumber()});
-										}
-						}
-						else
-							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
-					break;
+								}
+							}
+							else
+								JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
+						}else
+							JOptionPane.showMessageDialog(this, "Please enter the customer name", "Result", JOptionPane.INFORMATION_MESSAGE);;
+						break;
 				
+				}
 			}
 			
+			//update customer 
 			if( ae.getSource() == btnModify){
-				
-				
+				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && customerId != 0){
+					Customer c =new Customer();
+					CustomerDataSource cusDS = new CustomerDataSource();
+					c.setId(customerId);
+					c.setFirstName(tfFName.getText());
+					c.setLastName(tfLName.getText());
+					c.setAddress_one(tfAddress1.getText()); 
+					c.setAddress_two(tfAddress2.getText()); 
+					c.setCity(tfCity.getText());
+					c.setState(tfState.getText());
+					c.setZipCode(tfZipCode.getText());
+					c.setPhoneNumber(tfPhone.getText());
+					cusDS.updateCustomer(c);
+					if(cusDS.updateCustomer(c))
+						JOptionPane.showMessageDialog(this, "Updating Succeeded!", "Result", JOptionPane.INFORMATION_MESSAGE);
+					else
+						JOptionPane.showMessageDialog(this, "Updating failed!", "Result", JOptionPane.INFORMATION_MESSAGE);
+				}else
+					JOptionPane.showMessageDialog(this, "First Name or Last Name cannot be null!", "Result", JOptionPane.INFORMATION_MESSAGE);
 			}
-			
-			
-		}
-		
 		
 		
 		}	

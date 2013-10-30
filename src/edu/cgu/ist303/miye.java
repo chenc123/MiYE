@@ -6,6 +6,11 @@ import javax.swing.*;
 import edu.cgu.ist303.db.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.CompoundBorder;
 
 
 public class miye extends JFrame implements ActionListener {
@@ -49,16 +54,14 @@ public class miye extends JFrame implements ActionListener {
 		JPanel panelLogin = new JPanel();
 		panelLogin.setBackground(new Color(153, 153, 255));
 		panelLogin.setForeground(SystemColor.desktop);
-		mainPane.add(panelLogin, "Login"); // add card 1
-		panelLogin.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 150));
+		mainPane.add(panelLogin, "Login");
 		
 	
 		
 		JPanel panelLoginInput = new JPanel();
 		panelLoginInput.setBackground(new Color(204, 204, 255));
 		
-		panelLoginInput.setBorder(new EmptyBorder(20, 15, 30, 15));
-		panelLogin.add(panelLoginInput);
+		panelLoginInput.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), new EmptyBorder(20, 15, 30, 15)));
 		panelLoginInput.setLayout(new GridLayout(5, 0, 0, 5));
 		//panelLoginInput.setBorder(BorderFactory.createLineBorder(Color.black));
 		
@@ -82,6 +85,41 @@ public class miye extends JFrame implements ActionListener {
 		btnLogin = new JButton("Login");
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelLoginInput.add(btnLogin);
+		
+		JLabel lblVersion = new JLabel("Version 1.0");
+		lblVersion.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblVersion.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JLabel lblDevelopedBya = new JLabel("developed by \"A\" team");
+		lblDevelopedBya.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDevelopedBya.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		GroupLayout gl_panelLogin = new GroupLayout(panelLogin);
+		gl_panelLogin.setHorizontalGroup(
+			gl_panelLogin.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panelLogin.createSequentialGroup()
+					.addContainerGap(395, Short.MAX_VALUE)
+					.addComponent(lblVersion, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+					.addGap(389))
+				.addGroup(gl_panelLogin.createSequentialGroup()
+					.addGap(361)
+					.addComponent(panelLoginInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addGroup(Alignment.TRAILING, gl_panelLogin.createSequentialGroup()
+					.addContainerGap(395, Short.MAX_VALUE)
+					.addComponent(lblDevelopedBya, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
+					.addGap(373))
+		);
+		gl_panelLogin.setVerticalGroup(
+			gl_panelLogin.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelLogin.createSequentialGroup()
+					.addGap(150)
+					.addComponent(panelLoginInput, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(81)
+					.addComponent(lblVersion, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblDevelopedBya, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(33, Short.MAX_VALUE))
+		);
+		panelLogin.setLayout(gl_panelLogin);
 		btnLogin.addActionListener(this);
 		
 		
@@ -110,12 +148,11 @@ public class miye extends JFrame implements ActionListener {
 		splitPane.setRightComponent(pnlCardDeck);
 		pnlCardDeck.setLayout(new CardLayout(0, 0));
 		
+		funcReservation fReservation = new funcReservation();
+		pnlCardDeck.add(fReservation.TabbedPaneReservation(),"Reservation");
 		
 		funcCustomer fCustomer = new funcCustomer();
 		pnlCardDeck.add(fCustomer.tabPaneCustomer(),"Customer");
-		
-		funcReservation fReservation = new funcReservation();
-		pnlCardDeck.add(fReservation.TabbedPaneReservation(),"Reservation");
 		
 		JPanel pnlService = new JPanel();
 		pnlCardDeck.add(pnlService, "Service");
@@ -127,7 +164,7 @@ public class miye extends JFrame implements ActionListener {
 	}
 
 	 public void actionPerformed( ActionEvent e )
-	   {
+	 {
 	     String username = textFieldId.getText();
 	     String password = String.valueOf(textFieldPassword.getPassword()); //transfer char[] type to String
 	    
@@ -172,5 +209,4 @@ public class miye extends JFrame implements ActionListener {
 		 pDS.close();
 		 return password.equals(passwordInput); 
 	 }
-	
 }
