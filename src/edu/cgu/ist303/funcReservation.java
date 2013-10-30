@@ -42,7 +42,7 @@ public class funcReservation {
 	        JPanel card2 = new JPanel();
 	       
 	        card1.add( new BookPage(),BorderLayout.CENTER);
-	        card2.add(new JLabel("Under Construction"));
+	        card2.add(new BookRecord());
 	        tabbedPane.addTab(ADD_PANEL, card1);
 	        tabbedPane.addTab(QUERY_PANEL, card2);  
 	        
@@ -55,7 +55,7 @@ public class funcReservation {
 		private JTextField tfSerach, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
 		private JButton btnCheckCustomer, btnCheckRoom, btnBook;
 		private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, comboBoxService;
-		JPanel pnlCustomer, pnlReservation;
+		private JPanel pnlCustomer, pnlReservation;
 		private HashMap<String, Integer> roomTypeMap, roomMap, serviceCategoryMap;
 		private JDateChooser dateFrom, dateTo;
 		private JCheckBox chckbxPreferredRoom;
@@ -258,6 +258,7 @@ public class funcReservation {
 			comboBoxRoomType.addActionListener(this);
 			btnCheckRoom.addActionListener(this);
 			btnBook.addActionListener(this);
+			
 			GroupLayout groupLayout = new GroupLayout(this);
 			groupLayout.setHorizontalGroup(
 				groupLayout.createParallelGroup(Alignment.LEADING)
@@ -501,5 +502,149 @@ public class funcReservation {
 	
 	}
 
-	
+	class BookRecord extends JPanel implements ActionListener{
+		
+		
+		private JTable tblRecord;
+		private JDateChooser dcDateFrom, dcDateTo;
+		private JButton btnSearchAll, btnSearch;
+		
+		
+		/**
+		 * Create the panel.
+		 */
+		public BookRecord() {
+			setLayout(new BorderLayout(0, 0));
+			
+			JPanel panel = new JPanel();
+			add(panel, BorderLayout.NORTH);
+			panel.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+					ColumnSpec.decode("78px"),
+					ColumnSpec.decode("161px"),
+					ColumnSpec.decode("78px"),
+					ColumnSpec.decode("161px"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					RowSpec.decode("20px"),
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,}));
+			
+			JLabel lblNewLabel = new JLabel("Date From");
+			panel.add(lblNewLabel, "2, 1, center, fill");
+			
+			dcDateFrom = new JDateChooser();
+			dcDateFrom.setDateFormatString("yyyy/MM/dd");
+			panel.add(dcDateFrom, "3, 1, fill, fill");
+			
+			JLabel lblNewLabel_1 = new JLabel("Date To");
+			panel.add(lblNewLabel_1, "4, 1, center, fill");
+			
+			dcDateTo = new JDateChooser();
+			dcDateTo.setDateFormatString("yyyy/MM/dd");
+			panel.add(dcDateTo, "5, 1, fill, fill");
+			
+			btnSearch = new JButton("Submit");
+			panel.add(btnSearch, "7, 1");
+			
+			btnSearchAll = new JButton("Search All");
+			panel.add(btnSearchAll, "7, 3");
+			
+					//register buttons
+					btnSearchAll.addActionListener(this);
+					btnSearch.addActionListener(this);
+					
+			JScrollPane scrollPane = new JScrollPane();
+			add(scrollPane, BorderLayout.CENTER);
+			
+			tblRecord = new JTable();
+			scrollPane.setViewportView(tblRecord);
+			
+			
+			
+		}
+		@Override
+		public void actionPerformed(ActionEvent ae) {
+			
+			HashMap<Integer, String> roomMap = new HashMap<Integer, String>();
+			RoomDataSource roomDS = new RoomDataSource();
+			List<Room> rList = new ArrayList<Room>();
+			rList = roomDS.getAllRoom();
+			roomDS.close();
+			for(Room room:rList){
+				roomMap.put(room.getId(), room.getRoom_name());
+				//System.out.println(room.getRoom_name() + " " + room.getId() );
+			}
+			HashMap<Integer, String> customerMap = new HashMap<Integer, String>();
+			CustomerDataSource cusDS = new CustomerDataSource();
+			List<Customer> cusList = new ArrayList<Customer>();
+			cusList = cusDS.getAllCustomer();
+			cusDS.close();
+			for(Customer c:cusList){
+				String fullname = c.getFirstName() + " " + c.getLastName();
+				customerMap.put(c.getId(), fullname);
+				
+			}
+			HashMap<Integer, String> serviceCategoryMap = new HashMap<Integer, String>();
+			ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
+			List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
+			scList = scDS.getAllServiceCategory();
+			scDS.close();
+			for(ServiceCategory sc:scList){
+				serviceCategoryMap.put(sc.getId(), sc.getCategory());	   
+			}
+			
+			if(ae.getSource() == btnSearch){
+				java.sql.Date sqlDateFrom = new java.sql.Date(dcDateFrom.getDate().getTime());
+				
+				java.sql.Date sqlDateTo = new java.sql.Date(dcDateTo.getDate().getTime());
+				//java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+				ReservationDataSource rDS= new ReservationDataSource();
+				List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
+				reList = rDS.getReservation(sqlDateFrom, sqlDateTo);
+				rDS.close();
+				DefaultTableModel model = new DefaultTableModel();
+				String [] allcolumns = {"ID", "Room", "Book Date", "Customer", "Service", "Check in Date", "Check out Date"};
+				model.setColumnIdentifiers(allcolumns);
+				tblRecord.setModel(model);
+				if(!rList.isEmpty()){
+					for(edu.cgu.ist303.db.Reservation r:reList){
+						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
+						model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
+										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+					}
+					
+					
+					
+				}
+			}
+			
+			if(ae.getSource() == btnSearchAll){
+				
+
+				ReservationDataSource rDS= new ReservationDataSource();
+				List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
+				reList = rDS.getAllReservation();
+				rDS.close();
+				DefaultTableModel model = new DefaultTableModel();
+				String [] allcolumns = {"ID", "Room", "Book Date", "Customer", "Service", "Check in Date", "Check out Date"};
+				model.setColumnIdentifiers(allcolumns);
+				tblRecord.setModel(model);
+				if(!rList.isEmpty()){
+					for(edu.cgu.ist303.db.Reservation r:reList){
+						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
+						model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
+										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+					}
+					
+					
+					
+				}
+			}
+			
+		}
+
+		
+	}
 }

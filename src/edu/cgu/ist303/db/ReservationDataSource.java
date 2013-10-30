@@ -13,7 +13,7 @@ public class ReservationDataSource {
 	private static final String RESERVATION_ID = "Reservation_Id";
 	private static final String ROOM_ID = "Room_Id";
 	private static final String RESERVATION_DATE = "Reservation_Date";
-	private static final String CUSTOMER_ID = " Customer_Id";
+	private static final String CUSTOMER_ID = "Customer_Id";
 	private static final String SERVICE_CATEGORY_ID = "Service_Category_Id";
 	private static final String START_DATE = "Start_Date";
 	private static final String END_DATE = "End_Date";
@@ -197,6 +197,51 @@ public class ReservationDataSource {
 		
 		return availableRoomsList;
 	}
+	public List<Reservation> getReservation(java.sql.Date from, java.sql.Date to) {
+        List<Reservation> reservationlList = new ArrayList<Reservation>();
+        try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT * " + 
+							 "FROM "+ TABLE_NAME + " WHERE " + START_DATE + " BETWEEN '" + from + "' AND '" + to + "';" ; 
+				rs = stmt.executeQuery(sql);
+				while(rs.next())
+				{
+					Reservation r = new Reservation();
+					
+					r.setId(rs.getInt(RESERVATION_ID));
+					r.setFk_room_id(rs.getInt(ROOM_ID));
+					r.setReservation_Date(rs.getDate(RESERVATION_DATE));
+					r.setFk_customer_id(rs.getInt(CUSTOMER_ID));
+					r.setFk_service_category_id(rs.getInt(SERVICE_CATEGORY_ID));
+					r.setStart_Date(rs.getDate(START_DATE));
+					r.setEnd_Date(rs.getDate(END_DATE));
+					reservationlList.add(r);
+				}
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+
+        return reservationlList;
+      }
+	
 	 
 	 public List<Reservation> getAllReservation() {
          List<Reservation> reservationlList = new ArrayList<Reservation>();
