@@ -2,27 +2,42 @@ package edu.cgu.ist303;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import com.jgoodies.forms.factories.FormFactory;
 
+import edu.cgu.ist303.db.Customer;
+import edu.cgu.ist303.db.CustomerDataSource;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
+import java.awt.Font;
+
+import javax.swing.JPanel;
+
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
 
-import edu.cgu.ist303.db.*;
 
 
-public class funcCustomer implements ActionListener {
+public class funcCustomer {
 	
 	final static String ADD_PANEL = "Add New Customer";
     final static String QUERY_PANEL = "Find A Customer";
     
-    private JLabel labFName, labLName, labAddress1, labAddress2, labCity, labState, labZipCode, labPhone;
-	private JTextField textFName, textLName, textAddress1, textAddress2, textCity, textState, textZipCode, textPhone;
-	private JPanel pnlCustomerForm; 
-    private JButton btnSubmitCustomer; 
-	
-    //object for FindEditCustomer method
-    private JPanel pnlSearch;
-    private JComboBox<String> searchByField;
-    private JTextField textSearch;
-    private JButton	btnSearch;
+  
     
 	public JTabbedPane tabPaneCustomer() {
 	        JTabbedPane tabbedPane = new JTabbedPane();
@@ -31,170 +46,418 @@ public class funcCustomer implements ActionListener {
 	        JPanel card1 = new JPanel();
 	        JPanel card2 = new JPanel();
 	   
-	        //create card1 layout for customer-adding form
-	        card1.setLayout(new GridLayout(2,1));
-	       
-	        funcCustomer fCus = new funcCustomer();
-	        fCus.AddCustomerPanel(card1);
-	        fCus.FindEditCustomer(card2);
-	        
+	       card1.add(new AddCustomerPage());
+	       card2.add(new CustomerRecordPage());
 	        tabbedPane.addTab(ADD_PANEL, card1);
 	        tabbedPane.addTab(QUERY_PANEL, card2);  
 	        
 	       return tabbedPane;
     }   
 	
-	public void AddCustomerPanel(Container pane){
+	class AddCustomerPage extends JPanel implements ActionListener{
+		private JTextField tfFName, tfLName, tfAddress1, tfAddress2, tfCity, tfPhone, tfState, tfZipCode;
+		private JButton btnSubmit;
 		
-        pnlCustomerForm = new JPanel(new GridLayout(9,2)); 
-        btnSubmitCustomer = new JButton("Submit"); 
-        labFName = new JLabel("First Name", SwingConstants.RIGHT);
-		labLName = new JLabel("Last Name", SwingConstants.RIGHT);
-		labAddress1 = new JLabel("Address One", SwingConstants.RIGHT);
-		labAddress2 = new JLabel("Address Two", SwingConstants.RIGHT);
-		labCity = new JLabel("City", SwingConstants.RIGHT); 
-		labState = new JLabel("State", SwingConstants.RIGHT); 
-		labZipCode = new JLabel("Zip Code", SwingConstants.RIGHT);
-		labPhone = new JLabel("Phone", SwingConstants.RIGHT);
-		
-		textFName = new JTextField(20); 
-		textLName = new JTextField(20); 
-		textAddress1 = new JTextField(20); 
-		textAddress2 = new JTextField(20); 
-		textCity = new JTextField(20);
-		textState = new JTextField(20);
-		textZipCode = new JTextField(20);
-		textPhone = new JTextField(20);
-		
-		pnlCustomerForm.add(labFName);
-		pnlCustomerForm.add(textFName);
-		pnlCustomerForm.add(labLName);
-		pnlCustomerForm.add(textLName);
-		pnlCustomerForm.add(labAddress1);
-		pnlCustomerForm.add(textAddress1);
-		pnlCustomerForm.add(labAddress2);
-		pnlCustomerForm.add(textAddress2);
-		pnlCustomerForm.add(labCity);
-		pnlCustomerForm.add(textCity);
-		pnlCustomerForm.add(labState);
-		pnlCustomerForm.add(textState);
-		pnlCustomerForm.add(labZipCode);
-		pnlCustomerForm.add(textZipCode);
-		pnlCustomerForm.add(labPhone);
-		pnlCustomerForm.add(textPhone);
-		
-		pnlCustomerForm.add(new JLabel());//do nothing
-		
-		pnlCustomerForm.add(btnSubmitCustomer);
-		
-		btnSubmitCustomer.setActionCommand("submit");
-		btnSubmitCustomer.addActionListener(this);
-		pane.add(pnlCustomerForm);
-	}
-    
-	public void FindEditCustomer(Container pane)
-	{
-		pane.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		
-		//
-		pnlSearch = new JPanel(new FlowLayout());
-		
-		String [] list= {"Phone", "Name"};
-		searchByField =  new JComboBox<String>(list);
-		searchByField.setSelectedIndex(1);
-		
-		
-		textSearch = new JTextField(20);
-		btnSearch = new JButton("Submit");
-		pnlSearch.add(searchByField);
-		pnlSearch.add(textSearch);
-		pnlSearch.add(btnSearch);
-		pnlSearch.setBorder(BorderFactory.createLineBorder(Color.black));
-		
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.gridx = 0;
-		c.gridy = 0;
-		pane.add(pnlSearch, c);
-		
-		JPanel p= new JPanel();
-		funcCustomer.this.AddCustomerPanel(p); //pane =card2
-		p.setBorder(BorderFactory.createLineBorder(Color.black));
-		btnSubmitCustomer.setText("Modify");
-		btnSubmitCustomer.setActionCommand("modify");
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridheight=10;
-		c.anchor = GridBagConstraints.CENTER;
-		pane.add(p, c);
-		//searchByField.addActionListener(this);
-		btnSearch.setActionCommand("search");
-		btnSearch.addActionListener(this);
-	}
-	
-	
-	public void actionPerformed(ActionEvent e)
-	{
-		Customer c = new Customer();	
-		CustomerDataSource cusDS = new CustomerDataSource();
-		if("search".equals(btnSearch.getActionCommand()))
-		{
+		/**
+		 * Create the panel.
+		 */
+		public AddCustomerPage() {
 			
-				String searchItem = (String)searchByField.getSelectedItem();
+			JPanel pnlCustomerForm = new JPanel();
+			pnlCustomerForm.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Customer Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			GroupLayout groupLayout = new GroupLayout(this);
+			groupLayout.setHorizontalGroup(
+				groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createSequentialGroup()
+						.addGap(95)
+						.addComponent(pnlCustomerForm, GroupLayout.PREFERRED_SIZE, 319, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(94, Short.MAX_VALUE))
+			);
+			groupLayout.setVerticalGroup(
+				groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createSequentialGroup()
+						.addGap(54)
+						.addComponent(pnlCustomerForm, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(54, Short.MAX_VALUE))
+			);
+			pnlCustomerForm.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(67dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("default:grow"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,}));
 			
+			JLabel labFName = new JLabel("First Name");
+			labFName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labFName, "2, 2, right, default");
+			
+			tfFName = new JTextField();
+			tfFName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfFName, "4, 2, fill, default");
+			tfFName.setColumns(10);
+			
+			JLabel labLName = new JLabel("Last Name");
+			labLName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labLName, "2, 4, right, default");
+			
+			tfLName = new JTextField();
+			tfLName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfLName, "4, 4, fill, default");
+			tfLName.setColumns(10);
+			
+			JLabel labAddress1 = new JLabel("Address 1");
+			labAddress1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labAddress1, "2, 6, right, default");
+			
+			tfAddress1 = new JTextField();
+			tfAddress1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfAddress1, "4, 6, fill, default");
+			tfAddress1.setColumns(10);
+			
+			JLabel labAddress2 = new JLabel("Address 2");
+			labAddress2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labAddress2, "2, 8, right, default");
+			
+			tfAddress2 = new JTextField();
+			tfAddress2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfAddress2, "4, 8, fill, default");
+			tfAddress2.setColumns(10);
+			
+			JLabel labCity = new JLabel("City");
+			labCity.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labCity, "2, 10, right, default");
+			
+			tfCity = new JTextField();
+			tfCity.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfCity, "4, 10, fill, default");
+			tfCity.setColumns(10);
+			
+			JLabel labState = new JLabel("State");
+			labState.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labState, "2, 12, right, default");
+			
+			tfState = new JTextField();
+			tfState.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfState, "4, 12, fill, default");
+			tfState.setColumns(10);
+			
+			JLabel lblZipCode = new JLabel("Zip Code");
+			lblZipCode.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(lblZipCode, "2, 14, right, default");
+			
+			tfZipCode = new JTextField();
+			pnlCustomerForm.add(tfZipCode, "4, 14, fill, top");
+			tfZipCode.setColumns(10);
+			
+			JLabel labPhone = new JLabel("Phone");
+			labPhone.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(labPhone, "2, 16, right, default");
+			
+			tfPhone = new JTextField();
+			tfPhone.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(tfPhone, "4, 16, fill, default");
+			tfPhone.setColumns(10);
+			
+			btnSubmit = new JButton("Submit");
+			btnSubmit.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerForm.add(btnSubmit, "4, 18, left, default");
+			setLayout(groupLayout);
+			//add listener
+			btnSubmit.addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent ae) {
+			
+			if(ae.getSource() == btnSubmit){
+				
+				Customer c = new Customer();
+				
+				c.setFirstName(tfFName.getText());
+				c.setLastName(tfLName.getText());
+				c.setAddress_one(tfAddress1.getText());
+				c.setAddress_two(tfAddress2.getText());
+				c.setCity(tfCity.getText());
+				c.setState(tfState.getText());
+				c.setZipCode(tfZipCode.getText());
+				c.setPhoneNumber(tfPhone.getText());
+				CustomerDataSource cusDS = new CustomerDataSource();
+				cusDS.createCustomer(c);
+				cusDS.close();
+				
+				if(c.getId()!=0)
+					JOptionPane.showMessageDialog(this,
+							"Adding " + c.getFirstName() + " " + c.getLastName() + " successful!");
+				else
+					JOptionPane.showMessageDialog(this,
+			                   "Adding " + c.getFirstName() + " " + c.getLastName() + " failed!");
+				
+				
+			}
+			
+		}
+		
+		
+		
+	}
+
+	class CustomerRecordPage extends JPanel implements ActionListener {
+		private JTextField tfSearchString;
+		private JTextField tfFName;
+		private JTextField tfLName;
+		private JTextField tfAddress1;
+		private JTextField tfAddress2;
+		private JTextField tfCity;
+		private JTextField tfState;
+		private JTextField tfZipCode;
+		private JTextField tfPhone;
+		private JTable tblCustomer;
+		private JButton btnSearch, btnModify;
+		private JComboBox cbxSearchField;
+
+		/**
+		 * Create the panel.
+		 */
+		public CustomerRecordPage() {
+			
+			JPanel pnlSearch = new JPanel();
+			pnlSearch.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(7dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(64dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(115dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,}));
+			
+			String [] field = { "Phone", "Name" };
+			cbxSearchField = new JComboBox(field);
+			cbxSearchField.setSelectedIndex(0); //default: phone
+			pnlSearch.add(cbxSearchField, "4, 2, right, default");
+			
+			tfSearchString = new JTextField();
+			pnlSearch.add(tfSearchString, "6, 2, fill, default");
+			tfSearchString.setColumns(10);
+			
+			btnSearch = new JButton("Search");
+			pnlSearch.add(btnSearch, "8, 2");
+			
+			JPanel pnlCustomerModify = new JPanel();
+			pnlCustomerModify.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(74dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("max(116dlu;default)"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,}));
+			
+			JLabel lblNewLabel = new JLabel("First Name");
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel, "2, 2, right, default");
+			
+			tfFName = new JTextField();
+			pnlCustomerModify.add(tfFName, "4, 2, fill, default");
+			tfFName.setColumns(10);
+			
+			JLabel lblNewLabel_1 = new JLabel("Last Name");
+			lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_1, "2, 4, right, default");
+			
+			tfLName = new JTextField();
+			pnlCustomerModify.add(tfLName, "4, 4, fill, default");
+			tfLName.setColumns(10);
+			
+			JLabel lblNewLabel_2 = new JLabel("Address 1");
+			lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_2, "2, 6, right, default");
+			
+			tfAddress1 = new JTextField();
+			pnlCustomerModify.add(tfAddress1, "4, 6, fill, default");
+			tfAddress1.setColumns(10);
+			
+			JLabel lblNewLabel_3 = new JLabel("Address 2");
+			lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_3, "2, 8, right, default");
+			
+			tfAddress2 = new JTextField();
+			pnlCustomerModify.add(tfAddress2, "4, 8, fill, default");
+			tfAddress2.setColumns(10);
+			
+			JLabel lblNewLabel_4 = new JLabel("City");
+			lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_4, "2, 10, right, default");
+			
+			tfCity = new JTextField();
+			pnlCustomerModify.add(tfCity, "4, 10, fill, default");
+			tfCity.setColumns(10);
+			
+			JLabel lblNewLabel_5 = new JLabel("State");
+			lblNewLabel_5.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_5, "2, 12, right, default");
+			
+			tfState = new JTextField();
+			pnlCustomerModify.add(tfState, "4, 12, fill, default");
+			tfState.setColumns(10);
+			
+			JLabel lblNewLabel_6 = new JLabel("Zip Code");
+			lblNewLabel_6.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_6, "2, 14, right, default");
+			
+			tfZipCode = new JTextField();
+			pnlCustomerModify.add(tfZipCode, "4, 14, fill, default");
+			tfZipCode.setColumns(10);
+			
+			JLabel lblNewLabel_7 = new JLabel("Phone Numer");
+			lblNewLabel_7.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(lblNewLabel_7, "2, 16, right, default");
+			
+			tfPhone = new JTextField();
+			tfPhone.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomerModify.add(tfPhone, "4, 16, fill, default");
+			tfPhone.setColumns(10);
+			
+			btnModify = new JButton("Modify");
+			pnlCustomerModify.add(btnModify, "4, 18, left, default");
+			
+			JPanel pnlTable = new JPanel();
+			pnlTable.setLayout(new GridLayout(0, 1, 0, 0));
+			
+			JScrollPane scrollPane = new JScrollPane();
+			pnlTable.add(scrollPane);
+			
+			tblCustomer = new JTable();
+			scrollPane.setViewportView(tblCustomer);
+			
+			btnSearch.addActionListener(this);
+			btnModify.addActionListener(this);
+			GroupLayout groupLayout = new GroupLayout(this);
+			groupLayout.setHorizontalGroup(
+				groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGap(244)
+								.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGap(79)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+									.addComponent(pnlCustomerModify, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(pnlSearch, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))))
+						.addContainerGap(71, Short.MAX_VALUE))
+			);
+			groupLayout.setVerticalGroup(
+				groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(pnlSearch, GroupLayout.PREFERRED_SIZE, 38, GroupLayout.PREFERRED_SIZE)
+						.addGap(21)
+						.addComponent(pnlCustomerModify, GroupLayout.PREFERRED_SIZE, 272, GroupLayout.PREFERRED_SIZE)
+						.addGap(11)
+						.addComponent(pnlTable, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE))
+			);
+			setLayout(groupLayout);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent ae) {
+			
+			if( ae.getSource() == btnSearch){
+				Customer c =new Customer();
+				CustomerDataSource cusDS = new CustomerDataSource();
+				String searchItem = (String)cbxSearchField.getSelectedItem();
+				
 				switch (searchItem) {
 					case "Phone": 
-						c = cusDS.getCustomerByPhone(textSearch.getText());
-						textFName.setText(c.getFirstName());
-						textLName.setText(c.getLastName());
-						textAddress1.setText(c.getAddress_one()); 
-						textAddress2.setText(c.getAddress_two()); 
-						textCity.setText(c.getCity());
-						textState.setText(c.getState());
-						textZipCode.setText(c.getZipCode());
-						textPhone.setText(c.getPhoneNumber());
+						c = cusDS.getCustomerByPhone(tfSearchString.getText());
+						tfFName.setText(c.getFirstName());
+						tfLName.setText(c.getLastName());
+						tfAddress1.setText(c.getAddress_one()); 
+						tfAddress2.setText(c.getAddress_two()); 
+						tfCity.setText(c.getCity());
+						tfState.setText(c.getState());
+						tfZipCode.setText(c.getZipCode());
+						tfPhone.setText(c.getPhoneNumber());
 						if(c.getId()==0)
-							JOptionPane.showMessageDialog(pnlSearch, 
-									"No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
 						break;
-					case "Name": JOptionPane.showMessageDialog(pnlSearch,
-							"Name");
+					case "Name": 
+						List<Customer> cList = new ArrayList<Customer>();
+						cList = cusDS.getCustomerByName(tfSearchString.getText());
+						DefaultTableModel model = new DefaultTableModel();
+						model.setColumnIdentifiers(cusDS.getAllColumns());
+						tblCustomer.setModel(model);
+						if(!cList.isEmpty()){
+							for(Customer customer:cList){
+								model.addRow(new Object[]{customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getAddress_one(), 
+										customer.getAddress_two(), customer.getCity(),customer.getState(), customer.getZipCode(), customer.getPhoneNumber()});
+										}
+						}
+						else
+							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
 					break;
+				
+			}
+			
+			if( ae.getSource() == btnModify){
+				
+				
+			}
 			
 			
-				}
-			
-		}
-		if("modify".equals(btnSubmitCustomer.getActionCommand()))
-		{
-			
-		}
-		
-		if ("submit".equals(btnSubmitCustomer.getActionCommand()))
-		{
-		   
-		   
-		   c.setFirstName(textFName.getText());
-		   c.setLastName(textLName.getText());
-		   c.setAddress_one(textAddress1.getText());
-		   c.setAddress_two(textAddress2.getText());
-		   c.setCity(textCity.getText());
-		   c.setState(textState.getText());
-		   c.setZipCode(textZipCode.getText());
-		   c.setPhoneNumber(textPhone.getText());
-		   cusDS.createCustomer(c);
-		   cusDS.close();
-		   
-		   if(c.getId()!=0)
-			   JOptionPane.showMessageDialog(pnlCustomerForm,
-                    "Adding " + c.getFirstName() + " " + c.getLastName() + " successful!");
-		   else
-			   JOptionPane.showMessageDialog(pnlCustomerForm,
-	                   "Adding " + c.getFirstName() + " " + c.getLastName() + " failed!");
 		}
 		
+		
+		
+		}	
 		
 	}
-    
-	
+
 }
