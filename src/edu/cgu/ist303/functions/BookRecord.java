@@ -29,6 +29,7 @@ import edu.cgu.ist303.db.ServiceCategory;
 import edu.cgu.ist303.db.ServiceCategoryDataSource;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -77,6 +78,7 @@ public class BookRecord extends JPanel implements ActionListener{
 		dcDateTo = new JDateChooser();
 		dcDateTo.setDateFormatString("yyyy/MM/dd");
 		panel.add(dcDateTo, "5, 1, fill, fill");
+		
 		
 		btnSearch = new JButton("Submit");
 		panel.add(btnSearch, "7, 1");
@@ -129,27 +131,32 @@ public class BookRecord extends JPanel implements ActionListener{
 		}
 		
 		if(ae.getSource() == btnSearch){
-			java.sql.Date sqlDateFrom = new java.sql.Date(dcDateFrom.getDate().getTime());
-			
-			java.sql.Date sqlDateTo = new java.sql.Date(dcDateTo.getDate().getTime());
-			//java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
-			ReservationDataSource rDS= new ReservationDataSource();
-			List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
-			reList = rDS.getReservation(sqlDateFrom, sqlDateTo);
-			rDS.close();
-			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(rDS.getAllColumns());
-			tblRecord.setModel(model);
-			if(!rList.isEmpty()){
-				for(edu.cgu.ist303.db.Reservation r:reList){
-					//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
-					model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-									serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
-				}
+			if(dcDateTo.getDate() != null && dcDateFrom.getDate() != null){
+				if(dcDateTo.getDate().after(dcDateFrom.getDate()) ){
+					java.sql.Date sqlDateFrom = new java.sql.Date(dcDateFrom.getDate().getTime());
+					
+					java.sql.Date sqlDateTo = new java.sql.Date(dcDateTo.getDate().getTime());
+					//java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+					ReservationDataSource rDS= new ReservationDataSource();
+					List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
+					reList = rDS.getReservation(sqlDateFrom, sqlDateTo);
+					rDS.close();
+					DefaultTableModel model = new DefaultTableModel();
+					model.setColumnIdentifiers(rDS.getAllColumns());
+					tblRecord.setModel(model);
+					if(!rList.isEmpty()){
+						for(edu.cgu.ist303.db.Reservation r:reList){
+						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
+						model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
+										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+						}
+					}
+				}else
+					JOptionPane.showMessageDialog(this,  "\"Date to\" must be after \"Date from\"");
 				
 				
-				
-			}
+			}else
+				JOptionPane.showMessageDialog(this,  "Please Pick Dates");
 		}
 		
 		if(ae.getSource() == btnSearchAll){

@@ -178,7 +178,47 @@ public class CustomerDataSource {
 
          return customerList;
        }
+	 public boolean checkCustomerByPhone(String phone) {
 
+         try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT * " + 
+							 "FROM "+ TABLE_NAME +
+							 " WHERE " + PHONE_NUMBER + " = \"" + phone + "\";" ; 
+				rs = stmt.executeQuery(sql);
+				//rs.next();
+					
+				//if(rs.getInt(CUSTOMER_ID)!=0)
+				if(rs.next())	
+					return true;
+					
+				
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+        
+
+         return false;
+       }
+	 
 	 public Customer getCustomerByPhone(String phone) {
 		 Customer c = new Customer();
 

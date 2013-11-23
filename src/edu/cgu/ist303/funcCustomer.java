@@ -192,31 +192,57 @@ public class funcCustomer {
 		}
 		@Override
 		public void actionPerformed(ActionEvent ae) {
-			
+			CustomerDataSource cusDS = new CustomerDataSource();
 			if(ae.getSource() == btnSubmit){
+				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && !cusDS.checkCustomerByPhone(tfPhone.getText()))
+				{
+					Customer c = new Customer();
 				
-				Customer c = new Customer();
+					c.setFirstName(tfFName.getText());
+					c.setLastName(tfLName.getText());
+					c.setAddress_one(tfAddress1.getText());
+					c.setAddress_two(tfAddress2.getText());
+					c.setCity(tfCity.getText());
+					c.setState(tfState.getText());
+					c.setZipCode(tfZipCode.getText());
+					c.setPhoneNumber(tfPhone.getText());
+					
+					cusDS.createCustomer(c);
+					
 				
-				c.setFirstName(tfFName.getText());
-				c.setLastName(tfLName.getText());
-				c.setAddress_one(tfAddress1.getText());
-				c.setAddress_two(tfAddress2.getText());
-				c.setCity(tfCity.getText());
-				c.setState(tfState.getText());
-				c.setZipCode(tfZipCode.getText());
-				c.setPhoneNumber(tfPhone.getText());
-				CustomerDataSource cusDS = new CustomerDataSource();
-				cusDS.createCustomer(c);
-				cusDS.close();
-				
-				if(c.getId()!=0)
-					JOptionPane.showMessageDialog(this,
+					if(c.getId()!=0)
+						JOptionPane.showMessageDialog(this,
 							"Adding " + c.getFirstName() + " " + c.getLastName() + " successful!");
-				else
-					JOptionPane.showMessageDialog(this,
+					else
+						JOptionPane.showMessageDialog(this,
 			                   "Adding " + c.getFirstName() + " " + c.getLastName() + " failed!");
+					
+					tfFName.setText("");
+					tfLName.setText("");
+					tfAddress1.setText("");
+					tfAddress2.setText("");
+					tfCity.setText("");
+					tfState.setText("");
+					tfZipCode.setText("");
+					tfPhone.setText("");
+				
+				}else if( !tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && cusDS.checkCustomerByPhone(tfPhone.getText())){
+					JOptionPane.showMessageDialog(this,
+			                   "Phone \""+ tfPhone.getText() +"\" is already existed ");
+					tfFName.setText("");
+					tfLName.setText("");
+					tfAddress1.setText("");
+					tfAddress2.setText("");
+					tfCity.setText("");
+					tfState.setText("");
+					tfZipCode.setText("");
+					tfPhone.setText("");
+				}else
+					JOptionPane.showMessageDialog(this,
+			                   "\"First Name\" or \"Last Name\" or \"Phone\" cannot be empty ");
 				
 				
+				cusDS.close();
 			}
 			
 		}
@@ -501,7 +527,7 @@ public class funcCustomer {
 			
 			//update customer 
 			if( ae.getSource() == btnModify){
-				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && customerId != 0){
+				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && customerId != 0){
 					Customer c =new Customer();
 					CustomerDataSource cusDS = new CustomerDataSource();
 					c.setId(customerId);

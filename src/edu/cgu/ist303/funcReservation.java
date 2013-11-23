@@ -53,7 +53,7 @@ public class funcReservation {
 	class BookPage extends JPanel implements ActionListener, ItemListener, MouseListener {
 		
 		private int customerId; 
-		private JTextField tfSerach, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
+		private JTextField tfSearch, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
 		private JButton btnCheckCustomer, btnCheckRoom, btnBook;
 		private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, comboBoxService;
 		private JPanel pnlCustomer, pnlReservation;
@@ -67,7 +67,7 @@ public class funcReservation {
 		private JLabel lblNewLabel_1;
 		private JLabel lblNewLabel_2;
 		private JLabel labService;
-		private SimpleDateFormat sdf;
+		private SimpleDateFormat sdf = new  SimpleDateFormat("yyyy-MM-dd");
 		
 		
 		/**
@@ -106,9 +106,9 @@ public class funcReservation {
 			comboBoxSearchByField.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			pnlCustomer.add(comboBoxSearchByField, "1, 1, right, center");
 			
-			tfSerach = new JTextField();
-			pnlCustomer.add(tfSerach, "3, 1, fill, center");
-			tfSerach.setColumns(10);
+			tfSearch = new JTextField();
+			pnlCustomer.add(tfSearch, "3, 1, fill, center");
+			tfSearch.setColumns(10);
 			
 			btnCheckCustomer = new JButton("Check");
 			btnCheckCustomer.addActionListener(this);;
@@ -225,7 +225,7 @@ public class funcReservation {
 			pnlReservation.add(chckbxPreferredRoom, "6, 4, left, default");
 			
 			
-			JLabel labDateFrom = new JLabel("From Date");
+			JLabel labDateFrom = new JLabel("Date From");
 			labDateFrom.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			pnlReservation.add(labDateFrom, "4, 6, right, default");
 			
@@ -233,7 +233,7 @@ public class funcReservation {
 			dateFrom.setDateFormatString("yyyy/MM/dd");
 			pnlReservation.add(dateFrom, "6, 6, fill, fill");
 			
-			JLabel labDateTo = new JLabel("To Date");
+			JLabel labDateTo = new JLabel("Date To");
 			labDateTo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			pnlReservation.add(labDateTo, "4, 8, right, default");
 			
@@ -337,34 +337,43 @@ public class funcReservation {
 				
 				
 					try {
+						if( !tfSearch.getText().isEmpty() && !tfFirstName.getText().isEmpty() && !tfLastName.getText().isEmpty() && !tfSelectedRoom.getText().isEmpty() && !tfDateFrom.getText().isEmpty() && !tfDateTo.getText().isEmpty())
+						{
+							java.util.Date utilDateFrom = sdf.parse(tfDateFrom.getText());
+							java.sql.Date sqlDateFrom = new java.sql.Date(utilDateFrom.getTime());
+							java.util.Date utilDateTo = sdf.parse(tfDateTo.getText());
+							java.sql.Date sqlDateTo = new java.sql.Date(utilDateTo.getTime());
+							java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
 						
-						java.util.Date utilDateFrom = sdf.parse(tfDateFrom.getText());
-						java.sql.Date sqlDateFrom = new java.sql.Date(utilDateFrom.getTime());
-						java.util.Date utilDateTo = sdf.parse(tfDateTo.getText());
-						java.sql.Date sqlDateTo = new java.sql.Date(utilDateTo.getTime());
-						java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+							//System.out.println("Customer_ID: "+ customerId + " Room_ID: " + roomMap.get(tfSelectedRoom.getText()) + " Today: " + sqlToday + " From: " +sqlDateFrom + " To "+ sqlDateTo + " Service_Category_ID: " + serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+							edu.cgu.ist303.db.Reservation r = new edu.cgu.ist303.db.Reservation();
+							r.setFk_customer_id(customerId);
+							r.setFk_room_id(roomMap.get(tfSelectedRoom.getText()));
+							r.setReservation_Date(sqlToday);
+							r.setStart_Date(sqlDateFrom);
+							r.setEnd_Date(sqlDateTo);
 						
-						//System.out.println("Customer_ID: "+ customerId + " Room_ID: " + roomMap.get(tfSelectedRoom.getText()) + " Today: " + sqlToday + " From: " +sqlDateFrom + " To "+ sqlDateTo + " Service_Category_ID: " + serviceCategoryMap.get(comboBoxService.getSelectedItem()));
-						edu.cgu.ist303.db.Reservation r = new edu.cgu.ist303.db.Reservation();
-						r.setFk_customer_id(customerId);
-						r.setFk_room_id(roomMap.get(tfSelectedRoom.getText()));
-						r.setReservation_Date(sqlToday);
-						r.setStart_Date(sqlDateFrom);
-						r.setEnd_Date(sqlDateTo);
+							ReservationDataSource rDS = new ReservationDataSource();
+							if(comboBoxService.getSelectedItem() != ""){
+								r.setFk_service_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+								r = rDS.createReservation(r);
+							}	
+							else
+								r = rDS.createReservationNoService(r);
 						
-						ReservationDataSource rDS = new ReservationDataSource();
-						if(comboBoxService.getSelectedItem() != ""){
-							r.setFk_service_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
-							r = rDS.createReservation(r);
-						}	
-						else
-							r = rDS.createReservationNoService(r);
-						
-						if(r.getId()!=0)
-							JOptionPane.showMessageDialog(this, "Booking successful", "Message", JOptionPane.INFORMATION_MESSAGE);
-						else
-							;
-						
+							if(r.getId()!=0){
+								JOptionPane.showMessageDialog(this, "Booking successful", "Message", JOptionPane.INFORMATION_MESSAGE);
+								tfSearch.setText("");
+								tfFirstName.setText("");
+								tfLastName.setText("");
+								tfSelectedRoom.setText("");
+								tfDateFrom.setText("");
+								tfDateTo.setText("");
+							}
+							else
+								;
+						}else
+							JOptionPane.showMessageDialog(this, "Please fill all fields ", "Message", JOptionPane.INFORMATION_MESSAGE);
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -372,60 +381,56 @@ public class funcReservation {
 					
 				
 			}
-			
 			if(ae.getSource() == btnCheckRoom){
-				ReservationDataSource rDS= new ReservationDataSource();
-				String date_from;
-				String date_to;
-				//System.out.println(roomTypeMap.get(comboBoxRoomType.getSelectedItem()));
-				int room_type_id = roomTypeMap.get(comboBoxRoomType.getSelectedItem());
-			    sdf = new SimpleDateFormat("yyyy-MM-dd");
+				if(dateTo.getDate() != null && dateFrom.getDate() != null){
+					if(dateTo.getDate().after(dateFrom.getDate()) ){
+						ReservationDataSource rDS= new ReservationDataSource();
+						//System.out.println(roomTypeMap.get(comboBoxRoomType.getSelectedItem()));
+						int room_type_id = roomTypeMap.get(comboBoxRoomType.getSelectedItem());
+
+						java.sql.Date date_from = new java.sql.Date(dateFrom.getDate().getTime());
+						java.sql.Date date_to = new java.sql.Date(dateTo.getDate().getTime());
+						//System.out.println("From: " + date_from + " To: " + date_to);
 				
-			    if(dateFrom.getDate()==null || dateTo.getDate()==null)
-					JOptionPane.showMessageDialog(this, 
-							"Please choose dates you want to find avaiable rooms", "Warning", JOptionPane.INFORMATION_MESSAGE);
-			    else{
-			    	date_from = sdf.format(dateFrom.getDate());
-			    	date_to = sdf.format(dateTo.getDate());
-					//System.out.println("From: " + date_from + " To: " + date_to);
-			    	List<Integer> rList = new ArrayList<Integer>();
-					rList = rDS.getAvailableRooms(room_type_id, date_from, date_to);
-						
-					DefaultTableModel model = new DefaultTableModel();
-					String[] column = {"Available Room"};
-					model.setColumnIdentifiers(column);
-					table.setModel(model);
-					if(!rList.isEmpty()){
-						for(int i=0; i < rList.size(); i++){
-							model.addRow(new Object[]{rDS.getRoomNameById(rList.get(i))});
-						}
-						rDS.close();
-					}
-					else
-						JOptionPane.showMessageDialog(this, 
-								"All rooms are reserved for that period of time.", "Result", JOptionPane.INFORMATION_MESSAGE);
-			    }
-					
+						List<Integer> rList = new ArrayList<Integer>();
+						rList = rDS.getAvailableRooms(room_type_id, date_from, date_to);
 				
-				
+						DefaultTableModel model = new DefaultTableModel();
+						String[] column = {"Available Room"};
+						model.setColumnIdentifiers(column);
+						table.setModel(model);
+						if(!rList.isEmpty()){
+							for(int i=0; i < rList.size(); i++){
+								model.addRow(new Object[]{rDS.getRoomNameById(rList.get(i))});
+							}
+							rDS.close();
+						}else
+							JOptionPane.showMessageDialog(this, 
+									"All "+ comboBoxRoomType.getSelectedItem() + " rooms are reserved.", "Result", JOptionPane.INFORMATION_MESSAGE);
+					}else
+						JOptionPane.showMessageDialog(this,  "\"Date to\" must be after \"Date from\"");
+				}else
+					JOptionPane.showMessageDialog(this,  "Please Pick Dates");
 			}
 			
 			
+			
 			if(ae.getSource()==btnCheckCustomer  ){
-				String searchItem = (String)comboBoxSearchByField.getSelectedItem();
-				Customer c = new Customer();	
-				CustomerDataSource cusDS = new CustomerDataSource();
-				switch (searchItem) {
-					case "Phone": 
-						c = cusDS.getCustomerByPhone(tfSerach.getText());
-						//System.out.println(c.getFirstName());
-						tfFirstName.setText(c.getFirstName());
-						tfLastName.setText(c.getLastName());
-						customerId = c.getId();
-						if(c.getId()==0)
-							JOptionPane.showMessageDialog(this, 
-									"No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
-						break;
+				if( !tfSearch.getText().isEmpty()){
+					String searchItem = (String)comboBoxSearchByField.getSelectedItem();
+					Customer c = new Customer();	
+					CustomerDataSource cusDS = new CustomerDataSource();
+					switch (searchItem) {
+						case "Phone": 
+							c = cusDS.getCustomerByPhone(tfSearch.getText());
+							//System.out.println(c.getFirstName());
+							tfFirstName.setText(c.getFirstName());
+							tfLastName.setText(c.getLastName());
+							customerId = c.getId();
+							if(c.getId()==0)
+								JOptionPane.showMessageDialog(this, 
+										"Phone number \"" + tfSearch.getText() + "\" is not found", "Result", JOptionPane.INFORMATION_MESSAGE);
+							break;
 					/*
 					case "Name": 
 						List<Customer> cList = new ArrayList<Customer>();
@@ -445,7 +450,10 @@ public class funcReservation {
 						break;
 					*/
 			
-				}
+					}
+				}else
+					JOptionPane.showMessageDialog(this, 
+							"Please enter the phone number", "Result", JOptionPane.INFORMATION_MESSAGE);
 					
 			}
 
@@ -623,28 +631,32 @@ public class funcReservation {
 			}
 			
 			if(ae.getSource() == btnSearch){
-				if(dcDateFrom.getDate()!=null && dcDateTo.getDate()!=null){
-					java.sql.Date sqlDateFrom = new java.sql.Date(dcDateFrom.getDate().getTime());
-					java.sql.Date sqlDateTo = new java.sql.Date(dcDateTo.getDate().getTime());
-					//java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
-					ReservationDataSource rDS= new ReservationDataSource();
-					List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
-					reList = rDS.getReservation(sqlDateFrom, sqlDateTo);
-					rDS.close();
-					DefaultTableModel model = new DefaultTableModel();
-					String [] allcolumns = {"ID", "Room", "Book Date", "Customer", "Service", "Check in Date", "Check out Date"};
-					model.setColumnIdentifiers(allcolumns);
-					tblRecord.setModel(model);
-					if(!rList.isEmpty()){
-						for(edu.cgu.ist303.db.Reservation r:reList){
-						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
+				if(dcDateTo.getDate() != null && dcDateFrom.getDate() != null){
+					if(dcDateTo.getDate().after(dcDateFrom.getDate()) ){
+						java.sql.Date sqlDateFrom = new java.sql.Date(dcDateFrom.getDate().getTime());
+						
+						java.sql.Date sqlDateTo = new java.sql.Date(dcDateTo.getDate().getTime());
+						//java.sql.Date sqlToday = new java.sql.Date(new java.util.Date().getTime());
+						ReservationDataSource rDS= new ReservationDataSource();
+						List<edu.cgu.ist303.db.Reservation> reList = new ArrayList<edu.cgu.ist303.db.Reservation>();
+						reList = rDS.getReservation(sqlDateFrom, sqlDateTo);
+						rDS.close();
+						DefaultTableModel model = new DefaultTableModel();
+						model.setColumnIdentifiers(rDS.getAllColumns());
+						tblRecord.setModel(model);
+						if(!rList.isEmpty()){
+							for(edu.cgu.ist303.db.Reservation r:reList){
+							//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
 							model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+											serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+							}
 						}
-					}
-				}
-				else
-					;
+					}else
+						JOptionPane.showMessageDialog(this,  "\"Date to\" must be after \"Date from\"");
+					
+					
+				}else
+					JOptionPane.showMessageDialog(this,  "Please Pick Dates");
 			}
 			
 			if(ae.getSource() == btnSearchAll){

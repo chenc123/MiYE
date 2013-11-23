@@ -157,14 +157,18 @@ public class ReservationDataSource {
 			   }
 		 return room_name;
 	 }
-	public List<Integer> getAvailableRooms(int room_type_id, String date_from, String date_to){
+	public List<Integer> getAvailableRooms(int room_type_id, java.sql.Date date_from, java.sql.Date date_to){
 		List<Integer> availableRoomsList = new ArrayList<Integer>();
 		try {
 				stmt = mySqlconn.conn.createStatement();
-				String sql = "SELECT room_id FROM room r WHERE room_type_id = " + room_type_id +
+				/* String sql = "SELECT room_id FROM room r WHERE room_type_id = " + room_type_id +
+				 *		" AND room_id NOT IN (SELECT room_id FROM reservation re WHERE r.room_id = re.room_id " + 
+				 * " AND start_date <= '" + date_from + "' AND end_date >= '" + date_to +"');"; 
+				*/
+				String sql = "SELECT "+ ROOM_ID + " FROM room r WHERE room_type_id = " + room_type_id +
 						" AND room_id NOT IN (SELECT room_id FROM reservation re WHERE r.room_id = re.room_id " + 
-				" AND start_date <= '" + date_from + "' AND end_date >= '" + date_to +"');"; 
-				
+						 " AND (start_date >= '" + date_from + "' AND start_date < '" + date_to + "') OR " +
+						 "(end_date > '"+ date_from + "' AND end_date <= '" + date_to + "'));"; 
 				rs = stmt.executeQuery(sql);
 				
 				while(rs.next())

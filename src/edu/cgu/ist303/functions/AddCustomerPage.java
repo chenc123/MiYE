@@ -164,29 +164,38 @@ public class AddCustomerPage extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent ae) {
 		
 		if(ae.getSource() == btnSubmit){
-			
-			Customer c = new Customer();
-			
-			c.setFirstName(tfFName.getText());
-			c.setLastName(tfLName.getText());
-			c.setAddress_one(tfAddress1.getText());
-			c.setAddress_two(tfAddress2.getText());
-			c.setCity(tfCity.getText());
-			c.setState(tfState.getText());
-			c.setZipCode(tfZipCode.getText());
-			c.setPhoneNumber(tfPhone.getText());
 			CustomerDataSource cusDS = new CustomerDataSource();
-			cusDS.createCustomer(c);
-			cusDS.close();
 			
-			if(c.getId()!=0)
-				JOptionPane.showMessageDialog(this,
-						"Adding " + c.getFirstName() + " " + c.getLastName() + " successful!");
-			else
-				JOptionPane.showMessageDialog(this,
+			if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty())
+			{
+				Customer c = new Customer();
+			
+				c.setFirstName(tfFName.getText());
+				c.setLastName(tfLName.getText());
+				c.setAddress_one(tfAddress1.getText());
+				c.setAddress_two(tfAddress2.getText());
+				c.setCity(tfCity.getText());
+				c.setState(tfState.getText());
+				c.setZipCode(tfZipCode.getText());
+				c.setPhoneNumber(tfPhone.getText());
+				
+				cusDS.createCustomer(c);
+				
+			
+				if(c.getId()!=0)
+					JOptionPane.showMessageDialog(this,
+							"Adding " + c.getFirstName() + " " + c.getLastName() + " successful!");
+				else
+					JOptionPane.showMessageDialog(this,
 		                   "Adding " + c.getFirstName() + " " + c.getLastName() + " failed!");
 			
-			
+			}else if(cusDS.checkCustomerByPhone(tfPhone.getText())){
+				JOptionPane.showMessageDialog(this,
+		                   "Phone \""+ tfPhone.getText() +"\" is already existed ");
+			}else
+				JOptionPane.showMessageDialog(this,
+		                   "\"First Name\" or \"Last Name\" or \"Phone\" cannot be empty ");
+			cusDS.close();
 		}
 		
 	}
