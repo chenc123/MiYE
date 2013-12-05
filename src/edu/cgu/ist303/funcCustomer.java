@@ -264,7 +264,8 @@ public class funcCustomer {
 		private JTable tblCustomer;
 		private JButton btnSearch, btnModify;
 		private JComboBox cbxSearchField;
-		private int customerId;
+		//private int customerId;
+		private JTextField tfCustomerID;
 		/**
 		 * Create the panel.
 		 */
@@ -335,6 +336,12 @@ public class funcCustomer {
 			tfFName = new JTextField();
 			pnlCustomerModify.add(tfFName, "4, 2, fill, default");
 			tfFName.setColumns(10);
+			
+			tfCustomerID = new JTextField();
+			tfCustomerID.setEditable(false);
+			tfCustomerID.setVisible(false);
+			pnlCustomerModify.add(tfCustomerID, "6, 2, fill, default");
+			tfCustomerID.setColumns(10);
 			
 			JLabel lblNewLabel_1 = new JLabel("Last Name");
 			lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -441,7 +448,8 @@ public class funcCustomer {
 			int row = tblCustomer.getSelectedRow();
 			//int col = tblCustomer.getSelectedColumn();
 			try{
-				customerId = (int) tblCustomer.getValueAt(row, 0);
+				//customerId = (int) tblCustomer.getValueAt(row, 0);
+				tfCustomerID.setText(tblCustomer.getValueAt(row, 0).toString());
 				tfFName.setText(tblCustomer.getValueAt(row, 1).toString());
 				tfLName.setText(tblCustomer.getValueAt(row, 2).toString());
 				tfAddress1.setText(tblCustomer.getValueAt(row, 3).toString()); 
@@ -496,7 +504,8 @@ public class funcCustomer {
 							tfState.setText(c.getState());
 							tfZipCode.setText(c.getZipCode());
 							tfPhone.setText(c.getPhoneNumber());
-							customerId = c.getId();
+							tfCustomerID.setText(String.valueOf(c.getId()));
+							//customerId = c.getId();
 						if(c.getId()==0)
 							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
 						}else
@@ -527,10 +536,11 @@ public class funcCustomer {
 			
 			//update customer 
 			if( ae.getSource() == btnModify){
-				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && customerId != 0){
+				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && Integer.parseInt(tfCustomerID.getText()) != 0){
 					Customer c =new Customer();
 					CustomerDataSource cusDS = new CustomerDataSource();
-					c.setId(customerId);
+					//c.setId(customerId);
+					c.setId(Integer.parseInt(tfCustomerID.getText()));
 					c.setFirstName(tfFName.getText());
 					c.setLastName(tfLName.getText());
 					c.setAddress_one(tfAddress1.getText()); 
@@ -545,7 +555,7 @@ public class funcCustomer {
 					else
 						JOptionPane.showMessageDialog(this, "Updating failed!", "Result", JOptionPane.INFORMATION_MESSAGE);
 				}else
-					JOptionPane.showMessageDialog(this, "First Name or Last Name cannot be null!", "Result", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this, "First Name or Last Name cannot be empty!", "Result", JOptionPane.INFORMATION_MESSAGE);
 			}
 		
 		

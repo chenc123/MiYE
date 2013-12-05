@@ -41,7 +41,7 @@ public class ReservationDataSource {
 				String sql = "INSERT INTO " + TABLE_NAME + " (" + ROOM_ID + ", " + RESERVATION_DATE + ", " + CUSTOMER_ID + ", " + SERVICE_CATEGORY_ID + ", "+
 						START_DATE + ", " + END_DATE +")" +
 							 " VALUES ('" + r.getFk_room_id() + "', '" + r.getReservation_Date() + "', '" + r.getFk_customer_id() + "', '" + 
-							r.getFk_service_category_id() + "', '" + r.getStart_Date()+ "', '" + r.getEnd_Date() + "');" ; 
+							r.getFk_service_type_category_id() + "', '" + r.getStart_Date()+ "', '" + r.getEnd_Date() + "');" ; 
 				
 				stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				rs = stmt.getGeneratedKeys();
@@ -216,7 +216,7 @@ public class ReservationDataSource {
 					r.setFk_room_id(rs.getInt(ROOM_ID));
 					r.setReservation_Date(rs.getDate(RESERVATION_DATE));
 					r.setFk_customer_id(rs.getInt(CUSTOMER_ID));
-					r.setFk_service_category_id(rs.getInt(SERVICE_CATEGORY_ID));
+					r.setFk_service_type_category_id(rs.getInt(SERVICE_CATEGORY_ID));
 					r.setStart_Date(rs.getDate(START_DATE));
 					r.setEnd_Date(rs.getDate(END_DATE));
 					reservationlList.add(r);
@@ -262,7 +262,7 @@ public class ReservationDataSource {
 					r.setFk_room_id(rs.getInt(ROOM_ID));
 					r.setReservation_Date(rs.getDate(RESERVATION_DATE));
 					r.setFk_customer_id(rs.getInt(CUSTOMER_ID));
-					r.setFk_service_category_id(rs.getInt(SERVICE_CATEGORY_ID));
+					r.setFk_service_type_category_id(rs.getInt(SERVICE_CATEGORY_ID));
 					r.setStart_Date(rs.getDate(START_DATE));
 					r.setEnd_Date(rs.getDate(END_DATE));
 					reservationlList.add(r);

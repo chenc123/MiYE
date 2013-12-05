@@ -23,6 +23,8 @@ import javax.swing.JScrollPane;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class CustomerRecord extends JPanel implements ActionListener {
+public class CustomerRecord extends JPanel implements ActionListener, MouseListener {
 	private JTextField tfSearchString;
 	private JTextField tfFName;
 	private JTextField tfLName;
@@ -45,7 +47,8 @@ public class CustomerRecord extends JPanel implements ActionListener {
 	private JTable tblCustomer;
 	private JButton btnSearch, btnModify;
 	private JComboBox cbxSearchField;
-
+	//private int customerId;
+	private JTextField tfCustomerID;
 	/**
 	 * Create the panel.
 	 */
@@ -86,7 +89,7 @@ public class CustomerRecord extends JPanel implements ActionListener {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("max(116dlu;default)"),
 				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,},
+				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -116,6 +119,12 @@ public class CustomerRecord extends JPanel implements ActionListener {
 		tfFName = new JTextField();
 		pnlCustomerModify.add(tfFName, "4, 2, fill, default");
 		tfFName.setColumns(10);
+		
+		tfCustomerID = new JTextField();
+		tfCustomerID.setEditable(false);
+		tfCustomerID.setVisible(false);
+		pnlCustomerModify.add(tfCustomerID, "6, 2, fill, default");
+		tfCustomerID.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("Last Name");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -185,7 +194,7 @@ public class CustomerRecord extends JPanel implements ActionListener {
 		
 		tblCustomer = new JTable();
 		scrollPane.setViewportView(tblCustomer);
-		
+		tblCustomer.addMouseListener(this);
 		btnSearch.addActionListener(this);
 		btnModify.addActionListener(this);
 		GroupLayout groupLayout = new GroupLayout(this);
@@ -217,6 +226,48 @@ public class CustomerRecord extends JPanel implements ActionListener {
 		setLayout(groupLayout);
 	}
 
+	
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		int row = tblCustomer.getSelectedRow();
+		//int col = tblCustomer.getSelectedColumn();
+		try{
+			//customerId = (int) tblCustomer.getValueAt(row, 0);
+			tfCustomerID.setText(tblCustomer.getValueAt(row, 0).toString());
+			tfFName.setText(tblCustomer.getValueAt(row, 1).toString());
+			tfLName.setText(tblCustomer.getValueAt(row, 2).toString());
+			tfAddress1.setText(tblCustomer.getValueAt(row, 3).toString()); 
+			tfAddress2.setText(tblCustomer.getValueAt(row, 4).toString()); 
+			tfCity.setText(tblCustomer.getValueAt(row, 5).toString());
+			tfState.setText(tblCustomer.getValueAt(row, 6).toString());
+			tfZipCode.setText(tblCustomer.getValueAt(row, 7).toString());
+			tfPhone.setText(tblCustomer.getValueAt(row, 8).toString());
+		}catch(NullPointerException npe){
+			
+		}
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub			
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		
@@ -227,40 +278,68 @@ public class CustomerRecord extends JPanel implements ActionListener {
 			
 			switch (searchItem) {
 				case "Phone": 
-					c = cusDS.getCustomerByPhone(tfSearchString.getText());
-					tfFName.setText(c.getFirstName());
-					tfLName.setText(c.getLastName());
-					tfAddress1.setText(c.getAddress_one()); 
-					tfAddress2.setText(c.getAddress_two()); 
-					tfCity.setText(c.getCity());
-					tfState.setText(c.getState());
-					tfZipCode.setText(c.getZipCode());
-					tfPhone.setText(c.getPhoneNumber());
+					if(!tfSearchString.getText().isEmpty()){
+						c = cusDS.getCustomerByPhone(tfSearchString.getText());
+						tfFName.setText(c.getFirstName());
+						tfLName.setText(c.getLastName());
+						tfAddress1.setText(c.getAddress_one()); 
+						tfAddress2.setText(c.getAddress_two()); 
+						tfCity.setText(c.getCity());
+						tfState.setText(c.getState());
+						tfZipCode.setText(c.getZipCode());
+						tfPhone.setText(c.getPhoneNumber());
+						tfCustomerID.setText(String.valueOf(c.getId()));
+						//customerId = c.getId();
 					if(c.getId()==0)
 						JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
+					}else
+						JOptionPane.showMessageDialog(this, "Please enter the phone number", "Result", JOptionPane.INFORMATION_MESSAGE);;
 					break;
 				case "Name": 
-					List<Customer> cList = new ArrayList<Customer>();
-					cList = cusDS.getCustomerByName(tfSearchString.getText());
-					DefaultTableModel model = new DefaultTableModel();
-					model.setColumnIdentifiers(cusDS.getAllColumns());
-					tblCustomer.setModel(model);
-					if(!cList.isEmpty()){
-						for(Customer customer:cList){
-							model.addRow(new Object[]{customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getAddress_one(), 
+					if(!tfSearchString.getText().isEmpty()){
+						List<Customer> cList = new ArrayList<Customer>();
+						cList = cusDS.getCustomerByName(tfSearchString.getText());
+						DefaultTableModel model = new DefaultTableModel();
+						String [] columns = {"ID","First Name", "Last Name", "Address 1", "Address 2 ", "City", "State", "Zip Code", "Phone"};
+						model.setColumnIdentifiers(columns);
+						tblCustomer.setModel(model);
+						if(!cList.isEmpty()){
+							for(Customer customer:cList){
+								model.addRow(new Object[]{customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getAddress_one(), 
 									customer.getAddress_two(), customer.getCity(),customer.getState(), customer.getZipCode(), customer.getPhoneNumber()});
-									}
-					}
-					else
-						JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
-				break;
+							}
+						}
+						else
+							JOptionPane.showMessageDialog(this, "No such data exist", "Result", JOptionPane.INFORMATION_MESSAGE);
+					}else
+						JOptionPane.showMessageDialog(this, "Please enter the customer name", "Result", JOptionPane.INFORMATION_MESSAGE);;
+					break;
 			
+			}
 		}
 		
-		if( ae.getSource() == btnModify){
-			
-			
-		}
+			if( ae.getSource() == btnModify){
+				if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && Integer.parseInt(tfCustomerID.getText()) != 0){
+					Customer c =new Customer();
+					CustomerDataSource cusDS = new CustomerDataSource();
+					//c.setId(customerId);
+					c.setId(Integer.parseInt(tfCustomerID.getText()));
+					c.setFirstName(tfFName.getText());
+					c.setLastName(tfLName.getText());
+					c.setAddress_one(tfAddress1.getText()); 
+					c.setAddress_two(tfAddress2.getText()); 
+					c.setCity(tfCity.getText());
+					c.setState(tfState.getText());
+					c.setZipCode(tfZipCode.getText());
+					c.setPhoneNumber(tfPhone.getText());
+					cusDS.updateCustomer(c);
+					if(cusDS.updateCustomer(c))
+						JOptionPane.showMessageDialog(this, "Updating Succeeded!", "Result", JOptionPane.INFORMATION_MESSAGE);
+					else
+						JOptionPane.showMessageDialog(this, "Updating failed!", "Result", JOptionPane.INFORMATION_MESSAGE);
+				}else
+					JOptionPane.showMessageDialog(this, "First Name or Last Name cannot be empty!", "Result", JOptionPane.INFORMATION_MESSAGE);
+			}
 		
 		
 	}
@@ -269,4 +348,4 @@ public class CustomerRecord extends JPanel implements ActionListener {
 	
 	}	
 	
-}
+

@@ -25,8 +25,8 @@ import edu.cgu.ist303.db.CustomerDataSource;
 import edu.cgu.ist303.db.ReservationDataSource;
 import edu.cgu.ist303.db.Room;
 import edu.cgu.ist303.db.RoomDataSource;
-import edu.cgu.ist303.db.ServiceCategory;
-import edu.cgu.ist303.db.ServiceCategoryDataSource;
+import edu.cgu.ist303.db.ServiceTypeCategory;
+import edu.cgu.ist303.db.ServiceTypeCategoryDataSource;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -122,12 +122,12 @@ public class BookRecord extends JPanel implements ActionListener{
 			
 		}
 		HashMap<Integer, String> serviceCategoryMap = new HashMap<Integer, String>();
-		ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
-		List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
-		scList = scDS.getAllServiceCategory();
+		ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
+		List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
+		stcList = scDS.getAllServiceTypeCategory();
 		scDS.close();
-		for(ServiceCategory sc:scList){
-			serviceCategoryMap.put(sc.getId(), sc.getCategory());	   
+		for(ServiceTypeCategory stc:stcList){
+			serviceCategoryMap.put(stc.getId(), stc.getCategory());	   
 		}
 		
 		if(ae.getSource() == btnSearch){
@@ -148,7 +148,7 @@ public class BookRecord extends JPanel implements ActionListener{
 						for(edu.cgu.ist303.db.Reservation r:reList){
 						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
 						model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+										serviceCategoryMap.get(r.getFk_service_type_category_id()), r.getStart_Date(), r.getEnd_Date()});				
 						}
 					}
 				}else
@@ -173,7 +173,7 @@ public class BookRecord extends JPanel implements ActionListener{
 				for(edu.cgu.ist303.db.Reservation r:reList){
 					//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
 					model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-									serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+									serviceCategoryMap.get(r.getFk_service_type_category_id()), r.getStart_Date(), r.getEnd_Date()});				
 				}
 				
 				

@@ -166,7 +166,7 @@ public class AddCustomerPage extends JPanel implements ActionListener{
 		if(ae.getSource() == btnSubmit){
 			CustomerDataSource cusDS = new CustomerDataSource();
 			
-			if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty())
+			if(!tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && !tfPhone.getText().isEmpty() && !cusDS.checkCustomerByPhone(tfPhone.getText()))
 			{
 				Customer c = new Customer();
 			
@@ -188,10 +188,25 @@ public class AddCustomerPage extends JPanel implements ActionListener{
 				else
 					JOptionPane.showMessageDialog(this,
 		                   "Adding " + c.getFirstName() + " " + c.getLastName() + " failed!");
-			
-			}else if(cusDS.checkCustomerByPhone(tfPhone.getText())){
+				tfFName.setText("");
+				tfLName.setText("");
+				tfAddress1.setText("");
+				tfAddress2.setText("");
+				tfCity.setText("");
+				tfState.setText("");
+				tfZipCode.setText("");
+				tfPhone.setText("");
+			}else if(  !tfFName.getText().isEmpty() && !tfLName.getText().isEmpty() && cusDS.checkCustomerByPhone(tfPhone.getText())){
 				JOptionPane.showMessageDialog(this,
 		                   "Phone \""+ tfPhone.getText() +"\" is already existed ");
+				tfFName.setText("");
+				tfLName.setText("");
+				tfAddress1.setText("");
+				tfAddress2.setText("");
+				tfCity.setText("");
+				tfState.setText("");
+				tfZipCode.setText("");
+				tfPhone.setText("");
 			}else
 				JOptionPane.showMessageDialog(this,
 		                   "\"First Name\" or \"Last Name\" or \"Phone\" cannot be empty ");

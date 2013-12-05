@@ -5,9 +5,9 @@ import java.sql.Date;
 public class Reservation {
 	private int id;
 	private int fk_room_id;
-	private Date reservation_Date;
+	private java.sql.Date reservation_Date;
 	private int fk_customer_id;
-	private int fk_service_category_id;
+	private int fk_service_type_category_id;
 	private Date start_Date;
 	private Date end_Date;
 	public int getId() {
@@ -34,11 +34,11 @@ public class Reservation {
 	public void setFk_customer_id(int fk_customer_id) {
 		this.fk_customer_id = fk_customer_id;
 	}
-	public int getFk_service_category_id() {
-		return fk_service_category_id;
+	public int getFk_service_type_category_id() {
+		return fk_service_type_category_id;
 	}
-	public void setFk_service_category_id(int fk_service_category_id) {
-		this.fk_service_category_id = fk_service_category_id;
+	public void setFk_service_type_category_id(int fk_service_type_category_id) {
+		this.fk_service_type_category_id = fk_service_type_category_id;
 	}
 	public Date getStart_Date() {
 		return start_Date;

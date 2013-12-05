@@ -1,11 +1,11 @@
 package edu.cgu.ist303.db;
 
-public class ServiceCategory {
+public class ServiceTypeCategory {
 	private int id;
 	private String category;
 	private double unit_cost;
 	private int duration;
-	private int fk_service_id;
+	private int fk_service_type_id;
 	
 	public int getId() {
 		return id;
@@ -31,12 +31,14 @@ public class ServiceCategory {
 	public void setDuration(int duration) {
 		this.duration = duration;
 	}
-	public int getFk_service_id() {
-		return fk_service_id;
+	public int getFk_service_type_id() {
+		return fk_service_type_id;
 	}
-	public void setFk_service_id(int fk_service_id) {
-		this.fk_service_id = fk_service_id;
-	}
+	public void setFk_service_type_id(int fk_service_type_id) {
+		this.fk_service_type_id = fk_service_type_id;
+	} 
+	
+	
 	
 	
 }

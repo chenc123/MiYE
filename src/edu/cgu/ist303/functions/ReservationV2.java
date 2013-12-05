@@ -157,15 +157,15 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		
 		comboBoxService = new JComboBox();
 		pnlCustomer.add(comboBoxService, "3, 11, fill, default");
-		ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
-		List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
-		scList = scDS.getAllServiceCategory();
+		ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
+		List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
+		stcList = scDS.getAllServiceTypeCategory();
 		scDS.close();
 		serviceCategoryMap = new HashMap<String, Integer>(); 
 		comboBoxService.addItem("");
-		for(ServiceCategory sc:scList){
-			serviceCategoryMap.put(sc.getCategory(), sc.getId());
-		    comboBoxService.addItem(sc.getCategory());
+		for(ServiceTypeCategory stc:stcList){
+			serviceCategoryMap.put(stc.getCategory(), stc.getId());
+		    comboBoxService.addItem(stc.getCategory());
 		}
 		
 		
@@ -355,7 +355,7 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 					
 						ReservationDataSource rDS = new ReservationDataSource();
 						if(comboBoxService.getSelectedItem() != ""){
-							r.setFk_service_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+							r.setFk_service_type_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
 							r = rDS.createReservation(r);
 						}	
 						else

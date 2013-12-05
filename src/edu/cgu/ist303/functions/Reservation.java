@@ -105,11 +105,11 @@ public static void main(String[] args) {
                 
                 pnlService.add(labService); 
                 pnlService.add(comboService);
-                ServiceCategoryDataSource scDS = new ServiceCategoryDataSource();
-                List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
-                scList = scDS.getAllServiceCategory();
+                ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource();
+                List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
+                stcList = scDS.getAllServiceTypeCategory();
                 scDS.close();
-                for(ServiceCategory serviceCategory:scList)
+                for(ServiceTypeCategory serviceCategory:stcList)
                 {
                   comboService.addItem(serviceCategory.getCategory());
                   serviceMap.put(serviceCategory.getCategory(), serviceCategory.getId());
@@ -149,7 +149,7 @@ public static void main(String[] args) {
             r.setFk_room_id(roomMap.get(comboRoom.getSelectedItem())) ;        
             r.setReservation_Date(java.sql.Date.valueOf(textReserv_Date.getText())) ;
             r.setFk_customer_id(customerMap.get(comboCustomer.getSelectedItem())) ;
-            r.setFk_service_category_id(serviceMap.get(comboService.getSelectedItem()));
+            r.setFk_service_type_category_id(serviceMap.get(comboService.getSelectedItem()));
             r.setStart_Date(java.sql.Date.valueOf(textCheck_in_date.getText())) ;
             r.setEnd_Date(java.sql.Date.valueOf(textCheck_out_date.getText())) ;
         	

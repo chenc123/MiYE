@@ -161,13 +161,13 @@ public class funcReservation {
 			
 			comboBoxService = new JComboBox();
 			pnlCustomer.add(comboBoxService, "3, 11, fill, default");
-			ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
-			List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
-			scList = scDS.getAllServiceCategory();
+			ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
+			List<ServiceTypeCategory> scList = new ArrayList<ServiceTypeCategory>(); 
+			scList = scDS.getAllServiceTypeCategory();
 			scDS.close();
 			serviceCategoryMap = new HashMap<String, Integer>(); 
 			comboBoxService.addItem("");
-			for(ServiceCategory sc:scList){
+			for(ServiceTypeCategory sc:scList){
 				serviceCategoryMap.put(sc.getCategory(), sc.getId());
 			    comboBoxService.addItem(sc.getCategory());
 			}
@@ -355,7 +355,7 @@ public class funcReservation {
 						
 							ReservationDataSource rDS = new ReservationDataSource();
 							if(comboBoxService.getSelectedItem() != ""){
-								r.setFk_service_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
+								r.setFk_service_type_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
 								r = rDS.createReservation(r);
 							}	
 							else
@@ -622,12 +622,12 @@ public class funcReservation {
 				
 			}
 			HashMap<Integer, String> serviceCategoryMap = new HashMap<Integer, String>();
-			ServiceCategoryDataSource scDS = new ServiceCategoryDataSource(); 
-			List<ServiceCategory> scList = new ArrayList<ServiceCategory>(); 
-			scList = scDS.getAllServiceCategory();
+			ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
+			List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
+			stcList = scDS.getAllServiceTypeCategory();
 			scDS.close();
-			for(ServiceCategory sc:scList){
-				serviceCategoryMap.put(sc.getId(), sc.getCategory());	   
+			for(ServiceTypeCategory stc:stcList){
+				serviceCategoryMap.put(stc.getId(), stc.getCategory());	   
 			}
 			
 			if(ae.getSource() == btnSearch){
@@ -648,7 +648,7 @@ public class funcReservation {
 							for(edu.cgu.ist303.db.Reservation r:reList){
 							//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
 							model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-											serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+											serviceCategoryMap.get(r.getFk_service_type_category_id()), r.getStart_Date(), r.getEnd_Date()});				
 							}
 						}
 					}else
@@ -674,7 +674,7 @@ public class funcReservation {
 					for(edu.cgu.ist303.db.Reservation r:reList){
 						//RESERVATION_ID, ROOM_ID, RESERVATION_DATE, CUSTOMER_ID, SERVICE_CATEGORY_ID, START_DATE, END_DATE
 						model.addRow(new Object[]{r.getId(), roomMap.get(r.getFk_room_id()), r.getReservation_Date(), customerMap.get(r.getFk_customer_id()), 
-										serviceCategoryMap.get(r.getFk_service_category_id()), r.getStart_Date(), r.getEnd_Date()});				
+										serviceCategoryMap.get(r.getFk_service_type_category_id()), r.getStart_Date(), r.getEnd_Date()});				
 					}
 					
 					
