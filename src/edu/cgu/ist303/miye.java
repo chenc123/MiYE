@@ -159,14 +159,13 @@ public class miye extends JFrame implements ActionListener {
 		funcCustomer fCustomer = new funcCustomer();
 		pnlCardDeck.add(fCustomer.tabPaneCustomer(),"Customer");
 		
+		funcService fService = new funcService();
+		pnlCardDeck.add(fService.tabbedPaneService(),"Service");
 		
 		funcManagement fMgt = new funcManagement();
 		pnlCardDeck.add(fMgt.tabbedPaneManagement(),"Management");
-		JPanel pnlService = new JPanel();
-		pnlCardDeck.add(pnlService, "Service");
 		
-		JLabel lblService = new JLabel("This Pane is for Service");
-		pnlService.add(lblService);
+		
 		
 		
 	}

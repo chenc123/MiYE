@@ -42,7 +42,7 @@ import java.util.List;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class ServiceAppoint extends JFrame implements ActionListener {
+public class BookService extends JPanel implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField tfRoomName;
@@ -56,11 +56,12 @@ public class ServiceAppoint extends JFrame implements ActionListener {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ServiceAppoint frame = new ServiceAppoint();
+					BookService frame = new BookService();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,21 +69,21 @@ public class ServiceAppoint extends JFrame implements ActionListener {
 			}
 		});
 	}
-
+*/
 	/**
 	 * Create the frame.
 	 */
-	public ServiceAppoint() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public BookService() {
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 686, 444);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		//setContentPane(contentPane);
 		
 		JPanel pnlServiceAppointment = new JPanel();
 		
 		JPanel pnlPaymentInfo = new JPanel();
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		GroupLayout gl_contentPane = new GroupLayout(this);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
@@ -251,6 +252,8 @@ public class ServiceAppoint extends JFrame implements ActionListener {
 		cbbService.addActionListener(this);
 		cbbServiceTypeCategory.addActionListener(this);
 		cbbPaymentType.addActionListener(this);
+		
+		setLayout(gl_contentPane);
 	}
 
 	@Override
