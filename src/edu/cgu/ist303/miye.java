@@ -18,9 +18,10 @@ public class miye extends JFrame implements ActionListener {
 	private JPanel mainPane, pnlCardDeck, pnlCustomer;
 	private JTextField textFieldId;
 	private JPasswordField textFieldPassword;
-	private JButton btnLogin, btnShowReservationCard, btnShowCustomerCard,btnShowServiceCard;
+	private JButton btnLogin ;
 	private CardLayout cardManager;
 	private JSplitPane splitPane;
+	private JButton btnShowReservationCard, btnShowCustomerCard, btnShowServiceCard, btnShowMgtCard;
 	/**
 	 * Launch the application.
 	 */
@@ -144,6 +145,10 @@ public class miye extends JFrame implements ActionListener {
 		panelButtons.add(btnShowServiceCard);
 		btnShowServiceCard.addActionListener(this);
 		
+		btnShowMgtCard = new JButton("Management");
+		panelButtons.add(btnShowMgtCard);
+		btnShowMgtCard.addActionListener(this);
+		
 		pnlCardDeck = new JPanel();
 		splitPane.setRightComponent(pnlCardDeck);
 		pnlCardDeck.setLayout(new CardLayout(0, 0));
@@ -154,6 +159,9 @@ public class miye extends JFrame implements ActionListener {
 		funcCustomer fCustomer = new funcCustomer();
 		pnlCardDeck.add(fCustomer.tabPaneCustomer(),"Customer");
 		
+		
+		funcManagement fMgt = new funcManagement();
+		pnlCardDeck.add(fMgt.tabbedPaneManagement(),"Management");
 		JPanel pnlService = new JPanel();
 		pnlCardDeck.add(pnlService, "Service");
 		
@@ -182,8 +190,11 @@ public class miye extends JFrame implements ActionListener {
 		{
 			cardManager = (CardLayout) pnlCardDeck.getLayout();
 			cardManager.show(pnlCardDeck, (String)"Service");
+		}else if (e.getSource()== btnShowMgtCard)
+		{
+			cardManager = (CardLayout) pnlCardDeck.getLayout();
+			cardManager.show(pnlCardDeck, (String)"Management");
 		}
-		
 	    
 	     
 	     if ( e.getSource() == btnLogin )    

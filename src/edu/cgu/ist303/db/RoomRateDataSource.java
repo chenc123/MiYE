@@ -93,11 +93,12 @@ public class RoomRateDataSource {
 		try {
 				
 			 stmt = mySqlconn.conn.createStatement();
-				String sql = "UPDATE " + TABLE_NAME + " SET "+ PEAK_WEEKDAY + " = '" + rr.getPeak_weekday() + "', " +
-						PEAK_WEEKEND + " = '" + rr.getPeak_weekend() + "', " +
-						OFF_SEASON_WEEKDAY + " = '" + rr.getOff_season_weekday() + "', " + 
-						OFF_SEASON_WEEKEND + " = '" + rr.getOff_season_weekend() + "', " +
-							" WHERE " + ROOM_TYPE_ID + " = " + rr.getFk_room_type_id() + ";";
+				String sql = "UPDATE " + TABLE_NAME + " SET "+ PEAK_WEEKDAY + " = " + rr.getPeak_weekday() + ", " +
+						PEAK_WEEKEND + " = " + rr.getPeak_weekend() + ", " +
+						OFF_SEASON_WEEKDAY + " = " + rr.getOff_season_weekday() + ", " + 
+						OFF_SEASON_WEEKEND + " = " + rr.getOff_season_weekend() + ", " +
+						ROOM_TYPE_ID + " = " + rr.getFk_room_type_id() +
+							" WHERE " + ROOM_RATE_ID + " = " + rr.getId() + ";";
 				//System.out.println(sql);			 
 				stmt.executeUpdate(sql); 
 				success = true;
@@ -145,6 +146,93 @@ public class RoomRateDataSource {
          
          
      }
+	 public int getRoomRateIdByRoomTypeId(int room_type_id) {
+		
+
+          int room_rate_id = 0;
+         try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT * " + 
+							 "FROM "+ TABLE_NAME + 
+							 " WHERE " + ROOM_TYPE_ID + " = " + room_type_id + ";" ; 
+				rs = stmt.executeQuery(sql);
+				while(rs.next())
+				{
+					room_rate_id = rs.getInt(ROOM_RATE_ID);
+					
+					
+				}
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+        
+
+         return room_rate_id;
+       }
+	 public RoomRate getRoomTypeRateByRoomTypeId(int room_type_id) {
+		 RoomRate rr = new RoomRate();
+
+         
+         try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT * " + 
+							 "FROM "+ TABLE_NAME + 
+							 " WHERE " + ROOM_TYPE_ID + " = " + room_type_id + ";" ; 
+				rs = stmt.executeQuery(sql);
+				while(rs.next())
+				{
+					rr.setId(rs.getInt(ROOM_RATE_ID));
+					rr.setPeak_weekday(rs.getDouble(PEAK_WEEKDAY));
+					rr.setPeak_weekend(rs.getDouble(PEAK_WEEKEND));
+					rr.setOff_season_weekday(rs.getDouble(OFF_SEASON_WEEKDAY));
+					rr.setOff_season_weekend(rs.getDouble(OFF_SEASON_WEEKEND));
+					rr.setFk_room_type_id(rs.getInt(ROOM_TYPE_ID));
+					
+					
+				}
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+        
+
+         return rr;
+       }
 	 
 	 public List<RoomRate> getAllRoomRate() {
          List<RoomRate> roomRateList = new ArrayList<RoomRate>();
