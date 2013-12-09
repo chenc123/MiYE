@@ -55,9 +55,9 @@ public class funcReservation {
 		private int customerId; 
 		private JTextField tfSearch, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
 		private JButton btnCheckCustomer, btnCheckRoom, btnBook;
-		private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, comboBoxService;
+		private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom;
 		private JPanel pnlCustomer, pnlReservation;
-		private HashMap<String, Integer> roomTypeMap, roomMap, serviceCategoryMap;
+		private HashMap<String, Integer> roomTypeMap, roomMap;
 		private JDateChooser dateFrom, dateTo;
 		private JCheckBox chckbxPreferredRoom;
 		private JPanel pnlTable;
@@ -66,16 +66,16 @@ public class funcReservation {
 		private JLabel lblSelectedRoom;
 		private JLabel lblNewLabel_1;
 		private JLabel lblNewLabel_2;
-		private JLabel labService;
+		private JLabel labTotalCost;
 		private SimpleDateFormat sdf = new  SimpleDateFormat("yyyy-MM-dd");
-		
+		private JTextField tfTotalCost;
 		
 		/**
 		 * Create the panel.
 		 */
 		public BookPage() {
 			pnlCustomer = new JPanel();
-			pnlCustomer.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Booking Infomation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnlCustomer.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Customer Infomation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnlCustomer.setLayout(new FormLayout(new ColumnSpec[] {
 					ColumnSpec.decode("113px"),
 					FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
@@ -155,23 +155,21 @@ public class funcReservation {
 			pnlCustomer.add(tfDateTo, "3, 9, fill, default");
 			tfDateTo.setColumns(10);
 			
-			labService = new JLabel("Service");
-			labService.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			pnlCustomer.add(labService, "1, 11, right, default");
-			
-			comboBoxService = new JComboBox();
-			pnlCustomer.add(comboBoxService, "3, 11, fill, default");
+			labTotalCost = new JLabel("Total Cost");
+			labTotalCost.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			pnlCustomer.add(labTotalCost, "1, 11, right, default");
 			ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
-			List<ServiceTypeCategory> scList = new ArrayList<ServiceTypeCategory>(); 
-			scList = scDS.getAllServiceTypeCategory();
+			List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
+			stcList = scDS.getAllServiceTypeCategory();
 			scDS.close();
-			serviceCategoryMap = new HashMap<String, Integer>(); 
-			comboBoxService.addItem("");
-			for(ServiceTypeCategory sc:scList){
-				serviceCategoryMap.put(sc.getCategory(), sc.getId());
-			    comboBoxService.addItem(sc.getCategory());
-			}
-					
+			
+			
+			tfTotalCost = new JTextField();
+			tfTotalCost.setEditable(false);
+			pnlCustomer.add(tfTotalCost, "3, 11, fill, top");
+			tfTotalCost.setColumns(10);
+			
+			
 			btnBook = new JButton("Submit");
 			pnlCustomer.add(btnBook, "3, 15");
 			
@@ -259,7 +257,6 @@ public class funcReservation {
 			comboBoxRoomType.addActionListener(this);
 			btnCheckRoom.addActionListener(this);
 			btnBook.addActionListener(this);
-			
 			GroupLayout groupLayout = new GroupLayout(this);
 			groupLayout.setHorizontalGroup(
 				groupLayout.createParallelGroup(Alignment.LEADING)
@@ -354,11 +351,6 @@ public class funcReservation {
 							r.setEnd_Date(sqlDateTo);
 						
 							ReservationDataSource rDS = new ReservationDataSource();
-							if(comboBoxService.getSelectedItem() != ""){
-								r.setFk_service_type_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
-								r = rDS.createReservation(r);
-							}	
-							else
 								r = rDS.createReservationNoService(r);
 						
 							if(r.getId()!=0){
@@ -498,9 +490,9 @@ public class funcReservation {
 			
 			int row = table.getSelectedRow();
 			int col = table.getSelectedColumn();
-			
+			 String room_name = null;
 			 if(table.getValueAt(row, col) != null){
-				 String room_name = table.getValueAt(row, col).toString();
+				 room_name = table.getValueAt(row, col).toString();
 				 tfSelectedRoom.setText(room_name);
 				 tfDateFrom.setText(sdf.format(dateFrom.getDate()));
 				 tfDateTo.setText(sdf.format(dateTo.getDate()));
@@ -509,6 +501,22 @@ public class funcReservation {
 				 tfDateFrom.setText("");
 				 tfDateTo.setText("");
 			 }
+			 RoomRateDataSource rrDS = new RoomRateDataSource();
+				double total_cost = 0;
+				roomMap = new HashMap<String, Integer>();
+				RoomDataSource roomDS = new RoomDataSource();
+				List<Room> rList = new ArrayList<Room>();
+				rList = roomDS.getAllRoom();
+				for(Room room:rList){
+					roomMap.put(room.getRoom_name(), room.getId());
+				}
+				
+				java.sql.Date date_from = new java.sql.Date(dateFrom.getDate().getTime());
+				java.sql.Date date_to = new java.sql.Date(dateTo.getDate().getTime());
+				
+				total_cost = rrDS.room_total_cost(roomMap.get(room_name), date_from, date_to);
+				
+				tfTotalCost.setText(String.valueOf(total_cost));
 		}
 
 		@Override

@@ -13,7 +13,7 @@ public class ServiceTypeCategoryDataSource {
 	private static final String CATEGORY = "Category";
 	private static final String UNIT_COST = "Unit_Cost";
 	private static final String DURATION = "Duration";
-	private static final String SERVICE_ID = "Service_Type_Id";
+	private static final String SERVICE_ID = "Service_Id";
 
 	private Statement stmt = null;
 	private ResultSet rs = null;

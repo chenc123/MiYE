@@ -48,7 +48,8 @@ public class ServiceAppoint extends JFrame implements ActionListener {
 	private JTextField tfRoomName;
 	private JTextField tfPrice;
 	private JTextField tfPaymentField1, tfPaymentField2, tfPaymentField3;
-	private HashMap<String, Integer> serviceMap, serviceTypeMap, serviceTypeCategoryMap, paymentTypeMap;
+	private HashMap<String, Integer> serviceMap, serviceTypeMap, paymentTypeMap;
+	private HashMap<Integer, Integer> serviceTypeCategoryMap;
 	private JComboBox cbbServiceType, cbbService, cbbServiceTypeCategory;
 	private JComboBox cbbPaymentType;
 	private JLabel labPaymentField1, labPaymentField2, labPaymentField3;
@@ -290,11 +291,11 @@ public class ServiceAppoint extends JFrame implements ActionListener {
 				List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>();
 				stcList = stcDS.getServiceTypeCategoryByServiceId(service_id);
 				stcDS.close();
-				serviceTypeCategoryMap = new HashMap<String, Integer>();
+				serviceTypeCategoryMap = new HashMap<Integer, Integer>();
 				cbbServiceTypeCategory.removeAllItems();
 				for(ServiceTypeCategory stc:stcList){
-					serviceTypeCategoryMap.put(stc.getCategory(), stc.getId());
-					cbbServiceTypeCategory.addItem(stc.getCategory());
+					serviceTypeCategoryMap.put(stc.getDuration(), stc.getId());
+					cbbServiceTypeCategory.addItem(stc.getDuration());
 				}
 			}else //cbbServiceType.getSelectedItem()==null
 				; //do nothing

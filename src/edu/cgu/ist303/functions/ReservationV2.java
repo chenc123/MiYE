@@ -48,9 +48,9 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 	private int customerId; 
 	private JTextField tfSearch, tfFirstName, tfLastName, tfSelectedRoom ,tfDateFrom ,tfDateTo;
 	private JButton btnCheckCustomer, btnCheckRoom, btnBook;
-	private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom, comboBoxService;
-	JPanel pnlCustomer, pnlReservation;
-	private HashMap<String, Integer> roomTypeMap, roomMap, serviceCategoryMap;
+	private JComboBox comboBoxSearchByField, comboBoxRoomType, comboBoxRoom;
+	private JPanel pnlCustomer, pnlReservation;
+	private HashMap<String, Integer> roomTypeMap, roomMap;
 	private JDateChooser dateFrom, dateTo;
 	private JCheckBox chckbxPreferredRoom;
 	private JPanel pnlTable;
@@ -59,8 +59,9 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 	private JLabel lblSelectedRoom;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_2;
-	private JLabel labService;
-	private SimpleDateFormat sdf;
+	private JLabel labTotalCost;
+	private SimpleDateFormat sdf = new  SimpleDateFormat("yyyy-MM-dd");
+	private JTextField tfTotalCost;
 	
 	
 	/**
@@ -151,22 +152,19 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		pnlCustomer.add(tfDateTo, "3, 9, fill, default");
 		tfDateTo.setColumns(10);
 		
-		labService = new JLabel("Service");
-		labService.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		pnlCustomer.add(labService, "1, 11, right, default");
-		
-		comboBoxService = new JComboBox();
-		pnlCustomer.add(comboBoxService, "3, 11, fill, default");
+		labTotalCost = new JLabel("Total Cost");
+		labTotalCost.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		pnlCustomer.add(labTotalCost, "1, 11, right, default");
 		ServiceTypeCategoryDataSource scDS = new ServiceTypeCategoryDataSource(); 
 		List<ServiceTypeCategory> stcList = new ArrayList<ServiceTypeCategory>(); 
 		stcList = scDS.getAllServiceTypeCategory();
 		scDS.close();
-		serviceCategoryMap = new HashMap<String, Integer>(); 
-		comboBoxService.addItem("");
-		for(ServiceTypeCategory stc:stcList){
-			serviceCategoryMap.put(stc.getCategory(), stc.getId());
-		    comboBoxService.addItem(stc.getCategory());
-		}
+		
+		
+		tfTotalCost = new JTextField();
+		tfTotalCost.setEditable(false);
+		pnlCustomer.add(tfTotalCost, "3, 11, fill, top");
+		tfTotalCost.setColumns(10);
 		
 		
 		btnBook = new JButton("Submit");
@@ -354,12 +352,8 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 						r.setEnd_Date(sqlDateTo);
 					
 						ReservationDataSource rDS = new ReservationDataSource();
-						if(comboBoxService.getSelectedItem() != ""){
-							r.setFk_service_type_category_id(serviceCategoryMap.get(comboBoxService.getSelectedItem()));
-							r = rDS.createReservation(r);
-						}	
-						else
-							r = rDS.createReservationNoService(r);
+
+						r = rDS.createReservationNoService(r);
 					
 						if(r.getId() != 0){
 							JOptionPane.showMessageDialog(this, "Booking successful", "Message", JOptionPane.INFORMATION_MESSAGE);
@@ -507,9 +501,9 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 		
 		int row = table.getSelectedRow();
 		int col = table.getSelectedColumn();
-		
+		String room_name = null;
 		 if(table.getValueAt(row, col) != null){
-			 String room_name = table.getValueAt(row, col).toString();
+			 room_name = table.getValueAt(row, col).toString();
 			 tfSelectedRoom.setText(room_name);
 			 tfDateFrom.setText(sdf.format(dateFrom.getDate()));
 			 tfDateTo.setText(sdf.format(dateTo.getDate()));
@@ -518,6 +512,22 @@ public class ReservationV2 extends JPanel implements ActionListener, ItemListene
 			 tfDateFrom.setText("");
 			 tfDateTo.setText("");
 		 }
+		 RoomRateDataSource rrDS = new RoomRateDataSource();
+		double total_cost = 0;
+		roomMap = new HashMap<String, Integer>();
+		RoomDataSource roomDS = new RoomDataSource();
+		List<Room> rList = new ArrayList<Room>();
+		rList = roomDS.getAllRoom();
+		for(Room room:rList){
+			roomMap.put(room.getRoom_name(), room.getId());
+		}
+		
+		java.sql.Date date_from = new java.sql.Date(dateFrom.getDate().getTime());
+		java.sql.Date date_to = new java.sql.Date(dateTo.getDate().getTime());
+		
+		total_cost = rrDS.room_total_cost(roomMap.get(room_name), date_from, date_to);
+		
+		tfTotalCost.setText(String.valueOf(total_cost));
 	}
 
 	@Override
