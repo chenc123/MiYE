@@ -216,4 +216,70 @@ public class ServiceTypeCategoryDataSource {
 
          return price;
        }
+	 
+	 public double getUnitCostByServiceCategoryTypeId(int service_type_category_id) {
+		 double unit_cost = 0;
+         try {
+				stmt = mySqlconn.conn.createStatement();
+				String sql = "SELECT " + UNIT_COST +  
+							 " FROM "+ TABLE_NAME +
+							 " WHERE " +  SERVICE_TYPE_CATEGORY_ID + " = " + service_type_category_id + ";" ; 
+				rs = stmt.executeQuery(sql);
+				
+				rs.next();
+				unit_cost = rs.getDouble(1);
+			   } catch (SQLException ex) {
+				   System.out.println("SQLException: " + ex.getMessage());
+				   System.out.println("SQLState: " + ex.getSQLState());
+				   System.out.println("VendorError: " + ex.getErrorCode());
+			   }finally {
+				   if (rs != null) {
+				        try {
+				            rs.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        rs = null;
+				    }
+				   
+				   if (stmt != null) {
+				        try {
+				            stmt.close();
+				        } catch (SQLException sqlEx) { } // ignore
+
+				        stmt = null;
+				    }
+			   }
+        
+
+         return unit_cost;
+       }
+	 
+	 public boolean updateUnitCost(double unit_cost, int service_type_category_id)
+	    {
+			boolean success = false ; 
+			try {
+					
+				 stmt = mySqlconn.conn.createStatement();
+					String sql = "UPDATE " + TABLE_NAME + " SET "+ UNIT_COST + " = " + unit_cost  +
+								" WHERE " + SERVICE_TYPE_CATEGORY_ID + " = " + service_type_category_id + ";";
+					//System.out.println(sql);			 
+					stmt.executeUpdate(sql); 
+					success = true;
+				   } catch (SQLException ex) {
+					   System.out.println("SQLException: " + ex.getMessage());
+					   System.out.println("SQLState: " + ex.getSQLState());
+					   System.out.println("VendorError: " + ex.getErrorCode());
+					   success = false;
+				   }finally {
+					   if (stmt != null) {
+					        try {
+					            stmt.close();
+					        } catch (SQLException sqlEx) { } // ignore
+
+					        stmt = null;
+					    }
+				   }
+	           
+	          return success;
+	    }
 }

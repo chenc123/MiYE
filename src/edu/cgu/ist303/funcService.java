@@ -18,12 +18,12 @@ public class funcService {
 		 
 	        //Create the "cards".
 	        JPanel card1 = new JPanel();
-	        JPanel card2 = new JPanel();
+	      //  JPanel card2 = new JPanel();
 	       
 	        card1.add( new BookService(),BorderLayout.CENTER);
 	       // card2.add(new BookRecord());
 	        tabbedPane.addTab(BOOK_SERVICE_PANEL, card1);
-	        tabbedPane.addTab(SERVICE_RECORD_PANEL, card2);  
+	       // tabbedPane.addTab(SERVICE_RECORD_PANEL, card2);  
 	        
 	       return tabbedPane;
 	}

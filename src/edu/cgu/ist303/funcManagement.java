@@ -8,6 +8,7 @@ import javax.swing.JTabbedPane;
 import edu.cgu.ist303.funcReservation.BookPage;
 import edu.cgu.ist303.funcReservation.BookRecord;
 import edu.cgu.ist303.functions.MgtRoomPage;
+import edu.cgu.ist303.functions.MgtServicePage;
 
 public class funcManagement {
 	final static String MGT_ROOM_PANEL = "Manage Room";
@@ -22,7 +23,7 @@ public class funcManagement {
 	        JPanel card2 = new JPanel();
 	       
 	        card1.add( new MgtRoomPage(),BorderLayout.CENTER);
-	       // card2.add(new BookRecord());
+	        card2.add(new MgtServicePage(),BorderLayout.CENTER);
 	        tabbedPane.addTab(MGT_ROOM_PANEL, card1);
 	        tabbedPane.addTab(MGT_SERVICE_PANEL, card2);  
 	        
